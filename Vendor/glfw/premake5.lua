@@ -4,8 +4,8 @@ project "GLFW"
 	staticruntime "on"
 	warnings "off"
 
-	targetdir ("bin/" .. outputfold .. "/%{prj.name}")
-	objdir ("obj/" .. outputfold .. "/%{prj.name}")
+	targetdir (path.join(topfold, "bin", outputfold, "%{prj.name}"))
+    objdir (path.join(topfold, "bin-obj", outputfold, "%{prj.name}"))
 
 	files
 	{

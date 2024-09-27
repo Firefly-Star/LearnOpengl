@@ -3,5 +3,5 @@
 *.vcxproj
 *.filters
 *.user
-Core/bin/
-Core/obj/
+bin/
+bin-obj/

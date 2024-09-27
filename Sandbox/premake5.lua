@@ -5,8 +5,8 @@ project "Sandbox"
     toolset "v143"
     systemversion "latest"
 
-    targetdir ("bin/" .. outputfold .. "/%{prj.name}")
-    objdir ("obj/" .. outputfold .. "/%{prj.name}")
+    targetdir (path.join(topfold, "bin", outputfold, "%{prj.name}"))
+    objdir (path.join(topfold, "bin-obj", outputfold, "%{prj.name}"))
 
     files
     {
@@ -33,7 +33,7 @@ project "Sandbox"
         optimize "Off"       -- 关闭优化
         postbuildcommands
         {
-            "{COPYFILE} ../Vendor/assimp/bin/" .. outputfold .. "/assimp/assimp-vc143-mtd.dll bin/" .. outputfold .. "/%{prj.name}"
+            "{COPYFILE} " .. path.join(topfold, "bin", outputfold) .. "/assimp/assimp-vc143-mtd.dll " .. path.join(topfold, "bin", outputfold, "%{prj.name}"),
         }
 
     filter "configurations:Release"
@@ -41,9 +41,7 @@ project "Sandbox"
         optimize "Full"        -- 开启优化
         postbuildcommands
         {
-            "{COPYFILE} ../Vendor/assimp/bin/" .. outputfold .. "/assimp/assimp-vc143-mt.dll bin/" .. outputfold .. "/%{prj.name}"
+            "{COPYFILE} " .. path.join(topfold, "bin", outputfold) .. "/assimp/assimp-vc143-mt.dll " .. path.join(topfold, "bin", outputfold, "%{prj.name}")
         }
 
     filter {}
-
-    

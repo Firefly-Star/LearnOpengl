@@ -5,8 +5,8 @@ project "Core"
     systemversion "latest"
     toolset "v143"
 
-    targetdir ("bin/" .. outputfold .. "/%{prj.name}")
-    objdir("obj/" .. outputfold .. "/%{prj.name}")
+    targetdir (path.join(topfold, "bin", outputfold, "%{prj.name}"))
+    objdir (path.join(topfold, "bin-obj", outputfold, "%{prj.name}"))
 
     files
     {
@@ -27,7 +27,7 @@ project "Core"
 
     libdirs
     {
-        "../Vendor/assimp/bin/" .. outputfold .. "/assimp"
+        path.join(topfold, "bin", outputfold, "assimp")
     }
 
     links

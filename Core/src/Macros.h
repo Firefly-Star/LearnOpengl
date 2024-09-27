@@ -1,5 +1,5 @@
 #pragma once
-#define ASSET_PREFIX "C:/Users/Summer/Desktop/OpenGL2/Sandbox/Assets/"
+#define ASSET_PREFIX "C:/Users/Summer/Desktop/OpenGL/Sandbox/Assets/"
 #define ASSET(x) ASSET_PREFIX x
 
 #define SINGLETON_DELETE(x) \
