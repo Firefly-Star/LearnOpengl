@@ -10,7 +10,7 @@ namespace Firefly
 	std::once_flag Window::s_OnceFlag;
 
 	Window::Window(unsigned int width, unsigned int height)
-		:m_Width(width), m_Height(height), m_ClearFlag(GL_COLOR_BUFFER_BIT), m_Ratio((width + 0.0f) / height)
+		:m_Width(width), m_Height(height), m_Ratio((width + 0.0f) / height)
 	{
 		Construct();
 		RegistCallback();
@@ -107,7 +107,6 @@ namespace Firefly
 	{
 		glfwPollEvents();
 		glfwSwapBuffers(m_Window);
-		glClear(m_ClearFlag);
 	}
 
 	bool Window::OnWindowResizeEvent(WindowResizeEvent& e)
@@ -128,31 +127,4 @@ namespace Firefly
 		return false;
 	}
 
-	void Window::Enable(RenderStatus::Status status)
-	{
-		if (status & RenderStatus::DepthTest)
-		{
-			glEnable(GL_DEPTH_TEST);
-			m_ClearFlag |= GL_DEPTH_BUFFER_BIT;
-		}
-		if (status & RenderStatus::StencilTest)
-		{
-			glEnable(GL_STENCIL_TEST);
-			m_ClearFlag |= GL_STENCIL_BUFFER_BIT;
-		}
-	}
-	
-	void Window::Disable(RenderStatus::Status status)
-	{
-		if (status & RenderStatus::DepthTest)
-		{
-			glDisable(GL_DEPTH_TEST);
-			m_ClearFlag &= ~GL_DEPTH_BUFFER_BIT;
-		}
-		if (status & RenderStatus::StencilTest)
-		{
-			glDisable(GL_STENCIL_TEST);
-			m_ClearFlag &= ~GL_STENCIL_BUFFER_BIT;
-		}
-	}
 }

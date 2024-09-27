@@ -25,7 +25,6 @@ project "Sandbox"
     links
     {
         "Core",
-        "opengL32",
     }
 
     filter "configurations:Debug"

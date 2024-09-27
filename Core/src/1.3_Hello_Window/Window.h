@@ -30,9 +30,6 @@ namespace Firefly
 
 		bool OnWindowResizeEvent(WindowResizeEvent& e);
 
-		void Enable(RenderStatus::Status status);
-		void Disable(RenderStatus::Status status);
-
 		int GetWidth() const { return m_Width; }
 		int GetHeight() const { return m_Height; }
 		void SetRatio(float ratio) { m_Ratio = ratio; }
@@ -41,7 +38,6 @@ namespace Firefly
 		int m_Width, m_Height;
 		float m_Ratio;
 		std::function<void(Event&)> m_EventHandler;
-		GLenum m_ClearFlag;
 	private:
 		Window(unsigned int width = 800, unsigned int height = 800);
 		~Window();

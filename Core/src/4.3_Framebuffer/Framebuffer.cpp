@@ -32,7 +32,69 @@ namespace Firefly
 		{
 			std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
 
+			glDeleteTextures(1, &m_Texture);
+			glDeleteRenderbuffers(1, &m_Renderbuffer);
+			glDeleteFramebuffers(1, &m_RendererId);
+			throw std::runtime_error("Failed to create framebuffer!\n");
 		}
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
+	Framebuffer::~Framebuffer()
+	{
+		glDeleteTextures(1, &m_Texture);
+		glDeleteRenderbuffers(1, &m_Renderbuffer);
+		glDeleteFramebuffers(1, &m_RendererId);
+	}
+
+	Framebuffer::Framebuffer(Framebuffer&& other) noexcept
+		:m_RendererId(other.m_RendererId), m_Texture(other.m_Texture), m_Renderbuffer(other.m_Renderbuffer),
+		m_Height(other.m_Height), m_Width(other.m_Width)
+	{
+		other.m_RendererId = 0;
+		other.m_Renderbuffer = 0;
+		other.m_Texture = 0;
+	}
+
+	Framebuffer& Framebuffer::operator=(Framebuffer&& other) noexcept
+	{
+		if (this != &other)
+		{
+			glDeleteTextures(1, &m_Texture);
+			glDeleteRenderbuffers(1, &m_Renderbuffer);
+			glDeleteFramebuffers(1, &m_RendererId);
+
+			m_RendererId = other.m_RendererId;
+			m_Texture = other.m_Texture;
+			m_Renderbuffer = other.m_Renderbuffer;
+			m_Height = other.m_Height;
+			m_Width = other.m_Width;
+
+			other.m_RendererId = 0;
+			other.m_Renderbuffer = 0;
+			other.m_Texture = 0;
+		}
+		return *this;
+	}
+
+	void Framebuffer::PrepareForRender()
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererId);
+	}
+
+	void Framebuffer::Bind()
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererId);
+	}
+
+	void Framebuffer::UnBind()
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
+	void Framebuffer::BindTexture(unsigned int slot)
+	{
+		glActiveTexture(GL_TEXTURE0 + slot);
+		glBindTexture(GL_TEXTURE_2D, m_Texture);
 	}
 }
