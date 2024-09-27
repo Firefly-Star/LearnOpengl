@@ -1,0 +1,66 @@
+cmake_minimum_required(VERSION 3.1.0)
+project(LearnOpenGL)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
+
+# 仅在 Visual Studio 中设置平台工具集
+if(MSVC)
+    set(CMAKE_VS_PLATFORM_TOOLSET "v143")
+endif()
+
+# 设置 SOURCES 变量
+file(GLOB_RECURSE MY_SOURCES "OpenGL/src/*.cpp")
+set(EXTERN_SOURCES
+    "OpenGL/vendor/src/glad/src/glad.c"
+    "OpenGL/vendor/src/stb/stb_image.cpp"
+)
+set(SOURCES ${MY_SOURCES} ${EXTERN_SOURCES})
+
+# 设置包含目录
+set(INCLUDE_DIRS
+    "OpenGL/vendor/src/glad/include"
+    "OpenGL/vendor/src/glfw/include"
+    "OpenGL/src"
+    "OpenGL/vendor/src/stb"
+    "OpenGL/vendor/src/glm"
+    "OpenGL/vendor/src/assimp/include"
+    "OpenGL/src/Core"
+)
+
+# 设置库目录
+set(LIB_DIRS
+    "OpenGL/vendor/bin/glfw"
+    "OpenGL/vendor/bin/assimp"
+)
+
+# 定义中间目录和输出目录
+set(INTERMEDIATE_DIR "${CMAKE_SOURCE_DIR}/${CMAKE_GENERATOR_PLATFORM}-obj/$<CONFIG>")
+set(OUTPUT_DIR "${CMAKE_SOURCE_DIR}/${CMAKE_GENERATOR_PLATFORM}/$<CONFIG>")
+
+# 设置可执行文件
+add_executable(LearnOpenGL ${SOURCES})
+
+# 设置包含目录
+target_include_directories(LearnOpenGL PUBLIC ${INCLUDE_DIRS})
+target_link_directories(LearnOpenGL PRIVATE ${LIB_DIRS})
+
+# 链接库
+target_link_libraries(LearnOpenGL PUBLIC 
+    glfw3
+    opengl32
+    assimp-vc143-mtd
+)
+
+# 设置输出目录
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR})
+
+# 设置启动项目
+# 将 MyExecutable 设置为启动项目
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT LearnOpenGL)
+
+# 为不同的配置设置编译选项
+if(MSVC)
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O2")  # Visual Studio 的 /O2 优化
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Od /Zi")  # Visual Studio 的 /Od 和 /Zi
+endif()
