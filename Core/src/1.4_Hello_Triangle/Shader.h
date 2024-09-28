@@ -3,10 +3,13 @@
 #include <vector>
 #include <string>
 
+#include "Macros.h"
+
 namespace Firefly
 {
 	class Shader
 	{
+		MOVE_ONLY(Shader);
 	public:
 		enum class Type
 		{
@@ -20,8 +23,6 @@ namespace Firefly
 		};
 	public:
 		Shader(const std::vector<File>& files);
-		Shader(Shader&& other) noexcept;
-		Shader& operator=(Shader&& other) noexcept;
 		~Shader();
 		void Bind();
 		unsigned int GetLocation(const char* name) { return glGetUniformLocation(m_RendererId, name); }

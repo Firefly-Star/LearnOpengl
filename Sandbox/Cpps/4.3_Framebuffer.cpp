@@ -22,7 +22,7 @@ int main()
 	//modelForframe = glm::scale(modelForframe, glm::vec3(2.0f, 2.0f, 2.0f));
 
 	Shader& basicShader = ShaderLibrary::GetInstance().Get("BasicTexture2D");
-	Shader& postShader = ShaderLibrary::GetInstance().Get("GrayScaleTexture2D");
+	Shader& postShader = ShaderLibrary::GetInstance().Get("KernelTexture2D");
 	Framebuffer fb(1200, 800);
 
 	fb.Bind();
@@ -31,6 +31,18 @@ int main()
 	fb.UnBind();
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glm::mat3 kernel1 = glm::mat3(
+		2.0f, 2.0f, 2.0f,
+		2.0f, -15.0f, 2.0f,
+		2.0f, 2.0f, 2.0f
+	);
+	glm::mat3 kernel2 = glm::mat3(
+		1.0f / 16.0f, 1.0f / 16.0f, 1.0f / 16.0f,
+		1.0f / 16.0f, 1.0f / 2.0f, 1.0f / 16.0f,
+		1.0f / 16.0f, 1.0f / 16.0f, 1.0f / 16.0f
+	);
+	float offset = 1.0f / 300.0f;
 
 	windowInstance.RenderLoop([&]() {
 		fb.Bind();
@@ -49,6 +61,8 @@ int main()
 		fb.BindTexture(2);
 		glUniform1i(postShader.GetLocation("tex"), 2);
 		glUniformMatrix4fv(postShader.GetLocation("model"), 1, GL_FALSE, &modelForframe[0][0]);
+		glUniformMatrix3fv(postShader.GetLocation("kernel"), 1, GL_FALSE, &kernel2[0][0]);
+		glUniform1f(postShader.GetLocation("offset"), offset);
 		SpriteRenderer::GetInstance().Render();
 		});
 

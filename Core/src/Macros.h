@@ -28,3 +28,10 @@ private: \
 #define SINGLETON(x) \
     SINGLETON_DELETE(x) \
     SINGLETON_FUNC(x)
+
+#define MOVE_ONLY(x)\
+public:\
+    x(x&& other) noexcept;\
+    x& operator=(x&& other) noexcept;\
+    x(const x& other) = delete;\
+    x& operator=(const x& other) = delete;

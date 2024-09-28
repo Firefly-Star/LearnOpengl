@@ -1,11 +1,12 @@
 #pragma once
 #include <vector>
 #include <string>
-
+#include "Macros.h"
 namespace Firefly
 {
 	class VertexArray
 	{
+		MOVE_ONLY(VertexArray);
 	public:
 		enum class Type
 		{
@@ -19,8 +20,6 @@ namespace Firefly
 		};
 	public:
 		VertexArray();
-		VertexArray(VertexArray&& other) noexcept;
-		VertexArray& operator=(VertexArray&& other) noexcept;
 		~VertexArray();
 		void Bind();
 

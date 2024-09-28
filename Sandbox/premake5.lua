@@ -10,7 +10,8 @@ project "Sandbox"
 
     files
     {
-        "**.cpp"
+        "**.cpp",
+        "EntryPoint.h"
     }
 
     includedirs

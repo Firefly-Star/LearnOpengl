@@ -23,3 +23,5 @@
 #include "4.3_Framebuffer/ShaderLibrary.h"
 #include "4.3_Framebuffer/Framebuffer.h"
 #include "4.3_Framebuffer/SpriteRenderer.h"
+
+#include "4.4_Cube_Texture/SkyboxRenderer.h"

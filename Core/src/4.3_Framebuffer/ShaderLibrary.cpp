@@ -39,6 +39,14 @@ namespace Firefly
 			{Shader::Type::VertexShader, ASSET("4.3_Framebuffer/pure_vertex.glsl")},
 			{Shader::Type::FragmentShader, ASSET("4.3_Framebuffer/grayscale_fragment.glsl")},
 			}));
+		m_Shaders.emplace("KernelTexture2D", Shader({
+			{Shader::Type::VertexShader, ASSET("4.3_Framebuffer/pure_vertex.glsl")},
+			{Shader::Type::FragmentShader, ASSET("4.3_Framebuffer/kernel_fragment.glsl")},
+			}));
+		m_Shaders.emplace("Skybox3D", Shader({
+			{Shader::Type::VertexShader, ASSET("4.4_Cube_Texture/skybox_vertex.glsl")},
+			{Shader::Type::FragmentShader, ASSET("4.4_Cube_Texture/skybox_fragment.glsl")}
+			}));
 	}
 
 	ShaderLibrary::~ShaderLibrary()

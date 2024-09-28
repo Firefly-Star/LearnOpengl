@@ -1,13 +1,14 @@
 #pragma once
 
+#include "Macros.h"
+
 namespace Firefly
 {
 	class IndexBuffer
 	{
+		MOVE_ONLY(IndexBuffer);
 	public:
 		IndexBuffer(void* data, unsigned int size);
-		IndexBuffer(IndexBuffer&& other) noexcept;
-		IndexBuffer& operator=(IndexBuffer&& other) noexcept;
 		~IndexBuffer();
 		void Bind();
 		unsigned int GetCount() { return m_Count; }
