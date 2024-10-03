@@ -2,6 +2,8 @@
 
 #include "0.0_Extentions/IOSystem/EventSystem/EventManager.h"
 #include "0.0_Extentions/Updater/Updater.h"
+#include "0.0_Extentions/Updater/Time.h"
+#include "0.0_Extentions/Updater/MousePos.h"
 #include "0.0_Extentions/Test/Benchmark.h"
 
 #include "1.3_Hello_Window/Window.h"
