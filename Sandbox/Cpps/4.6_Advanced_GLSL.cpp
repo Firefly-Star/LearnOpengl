@@ -81,20 +81,18 @@ int main()
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(0.0f, -5.0f, -5.0f));
 		model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
-		glUniformMatrix4fv(ourShader.GetLocation("modelMat"), 1, GL_FALSE, &model[0][0]);
 		glm::mat3 normalMat = glm::inverse(glm::transpose(glm::mat3(model)));
-		glUniformMatrix3fv(ourShader.GetLocation("normalMat"), 1, GL_FALSE, &normalMat[0][0]);
+		ourShader.SetUniform("modelMat", model);
+		ourShader.SetUniform("normalMat", normalMat);
 
-		glUniform3fv(ourShader.GetLocation("flashLight.ambientColor"), 1, &light.ambientColor[0]);
-		glUniform3fv(ourShader.GetLocation("flashLight.diffuseColor"), 1, &light.diffuseColor[0]);
-		glUniform3fv(ourShader.GetLocation("flashLight.specularColor"), 1, &light.specularColor[0]);
-		glUniform1f(ourShader.GetLocation("flashLight.innerCutOff"), light.innerCutOff);
-		glUniform1f(ourShader.GetLocation("flashLight.outerCutOff"), light.outerCutOff);
-
-		glUniform3fv(ourShader.GetLocation("flashLight.position"), 1, &(view.GetPosition()[0]));
-		glUniform3fv(ourShader.GetLocation("flashLight.direction"), 1, &(view.GetDirection()[0]));
-
-		glUniform3fv(ourShader.GetLocation("observePos"), 1, &(view.GetPosition()[0]));
+		ourShader.SetUniform("flashLight.ambientColor", light.ambientColor);
+		ourShader.SetUniform("flashLight.diffuseColor", light.diffuseColor);
+		ourShader.SetUniform("flashLight.specularColor", light.specularColor);
+		ourShader.SetUniform("flashLight.innerCutOff", light.innerCutOff);
+		ourShader.SetUniform("flashLight.outerCutOff", light.outerCutOff);
+		ourShader.SetUniform("flashLight.position", view.GetPosition());
+		ourShader.SetUniform("flashLight.direction", view.GetDirection());
+		ourShader.SetUniform("observePos", view.GetPosition());
 		ourModel.Render(ourShader);
 #endif
 		// model with reflection
@@ -104,13 +102,12 @@ int main()
 		glm::mat4 model2 = glm::mat4(1.0f);
 		model2 = glm::translate(model2, glm::vec3(5.0f, -5.0f, -5.0f));
 		model2 = glm::scale(model2, glm::vec3(0.5f, 0.5f, 0.5f));
-		glUniformMatrix4fv(reflectShader.GetLocation("modelMat"), 1, GL_FALSE, &model2[0][0]);
 		glm::mat3 normalMat2 = glm::inverse(glm::transpose(glm::mat3(model2)));
-		glUniformMatrix3fv(reflectShader.GetLocation("normalMat"), 1, GL_FALSE, &normalMat2[0][0]);
-
-		glUniform3fv(reflectShader.GetLocation("viewPos"), 1, &(view.GetPosition()[0]));
+		reflectShader.SetUniform("modelMat", model2);
+		reflectShader.SetUniform("normalMat", normalMat2);
+		reflectShader.SetUniform("viewPos", view.GetPosition());
 		skybox->Bind(2);
-		glUniform1i(reflectShader.GetLocation("tex"), 2);
+		reflectShader.SetUniform("tex", 2);
 		ourModel.Render(reflectShader);
 #endif
 		// model with refraction
@@ -120,25 +117,23 @@ int main()
 		glm::mat4 model3 = glm::mat4(1.0f);
 		model3 = glm::translate(model3, glm::vec3(-5.0f, -5.0f, -5.0f));
 		model3 = glm::scale(model3, glm::vec3(0.5f, 0.5f, 0.5f));
-		glUniformMatrix4fv(refractShader.GetLocation("modelMat"), 1, GL_FALSE, &model3[0][0]);
 		glm::mat3 normalMat3 = glm::inverse(glm::transpose(glm::mat3(model3)));
-		glUniformMatrix3fv(refractShader.GetLocation("normalMat"), 1, GL_FALSE, &normalMat3[0][0]);
-
-		glUniform3fv(refractShader.GetLocation("viewPos"), 1, &(view.GetPosition()[0]));
+		refractShader.SetUniform("modelMat", model3);
+		refractShader.SetUniform("normalMat", normalMat3);
+		refractShader.SetUniform("viewPos", view.GetPosition());
 		skybox->Bind(2);
-		glUniform1i(refractShader.GetLocation("tex"), 2);
+		refractShader.SetUniform("tex", 2);
 		float ratio = sin(Time::GetTime()) * 0.25f + 0.5f;
-		glUniform1f(refractShader.GetLocation("ratio"), ratio);
+		refractShader.SetUniform("ratio", ratio);
 		ourModel.Render(refractShader);
 #endif
 		// Render Skybox
 		skybox->Bind(2);
 		skyboxShader.Bind();
 		glm::mat4 pvMat = projection->GetProjection() * glm::mat4(glm::mat3(view.GetView()));
-		glUniformMatrix4fv(skyboxShader.GetLocation("pvMat"), 1, GL_FALSE, &pvMat[0][0]);
-		glUniform1i(skyboxShader.GetLocation("tex"), 2);
+		skyboxShader.SetUniform("pvMat", pvMat);
+		skyboxShader.SetUniform("tex", 2);
 		SkyboxRenderer::GetInstance().Render();
-
 		});
 
 	delete skybox;

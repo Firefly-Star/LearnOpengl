@@ -45,7 +45,7 @@ namespace Firefly
 			case Texture::Type::Normal: name = "model.texture_normal" + std::to_string(normalNr++); break;
 			case Texture::Type::Ambient: name = "model.texture_height" + std::to_string(heightNr++); break;
 			}
-			glUniform1i(shader.GetLocation(("material." + name).c_str()), i);
+			shader.SetUniform(("material." + name).c_str(), i);
 		}
 		m_VAO.Bind();
 		glDrawElements(GL_TRIANGLES, m_IBO.GetCount(), GL_UNSIGNED_INT, 0);
