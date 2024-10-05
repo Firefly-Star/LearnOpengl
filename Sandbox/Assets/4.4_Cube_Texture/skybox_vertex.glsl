@@ -2,9 +2,9 @@
 
 layout(location = 0) in vec3 a_Position;
 
-out vec3 v_TexCoord;
-
 uniform mat4 pvMat;
+
+out vec3 v_TexCoord;
 
 void main()
 {

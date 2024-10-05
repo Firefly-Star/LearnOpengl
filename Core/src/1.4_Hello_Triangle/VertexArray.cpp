@@ -48,8 +48,11 @@ namespace Firefly
 		size_t offset = 0;
 		for (int i = 0; i < layout.size(); i++)
 		{
-			glVertexAttribPointer(i, layout[i].count, TypeToEnum(layout[i].type), TypeNormalized(layout[i].type), stride, reinterpret_cast<void*>(offset));
-			glEnableVertexAttribArray(i);
+			if (layout[i].type != Type::Padding)
+			{
+				glVertexAttribPointer(i, layout[i].count, TypeToEnum(layout[i].type), TypeNormalized(layout[i].type), stride, reinterpret_cast<void*>(offset));
+				glEnableVertexAttribArray(i);
+			}
 			offset += layout[i].count * Sizeof(layout[i].type);
 		}
 	}
@@ -63,6 +66,7 @@ namespace Firefly
 	{
 		switch (type)
 		{
+		case Type::Padding: return 1;
 		case Type::Int: return sizeof(int);
 		case Type::Float: return sizeof(float);
 		case Type::Bool: return sizeof(bool);
@@ -97,5 +101,5 @@ namespace Firefly
 		}
 		return 0;
 	}
-	
+
 }

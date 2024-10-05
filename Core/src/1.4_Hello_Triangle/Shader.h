@@ -25,6 +25,7 @@ namespace Firefly
 		Shader(const std::vector<File>& files);
 		~Shader();
 		void Bind();
+		void BindUniformBlock(const char* name, unsigned int slot = 0);
 		unsigned int GetLocation(const char* name) { return glGetUniformLocation(m_RendererId, name); }
 	private:
 		unsigned int m_RendererId;

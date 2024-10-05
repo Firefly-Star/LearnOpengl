@@ -2,8 +2,11 @@
 layout(location = 0) in vec3 a_Pos;
 layout(location = 1) in vec3 a_Normal;
 layout(location = 2) in vec2 a_TexCoord;
+layout(std140) uniform Mat
+{
+	mat4 pvMat;
+};
 
-uniform mat4 pvMat;
 uniform mat4 modelMat;
 uniform mat3 normalMat;
 

@@ -44,5 +44,6 @@ namespace Firefly
 
 		void Construct();
 		void RegistCallback();
+		void GetOpenGLInfo();
 	};
 }

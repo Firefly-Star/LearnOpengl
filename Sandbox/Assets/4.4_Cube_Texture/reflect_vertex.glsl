@@ -1,11 +1,14 @@
 #version 460 core
 layout(location = 0) in vec3 a_Position;
 layout(location = 1) in vec3 a_Normal;
+layout(std140) uniform Mat
+{
+	mat4 pvMat;
+};
 
 out vec3 v_Normal;
 out vec3 v_FragPos;
 
-uniform mat4 pvMat;
 uniform mat4 modelMat;
 uniform mat3 normalMat;
 

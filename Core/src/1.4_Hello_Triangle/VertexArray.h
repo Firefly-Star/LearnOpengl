@@ -11,6 +11,7 @@ namespace Firefly
 		enum class Type
 		{
 			None = 0,
+			Padding,
 			Int, Float, UnsignedInt, Double, Bool
 		};
 		struct Element

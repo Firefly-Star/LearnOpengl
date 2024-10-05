@@ -71,9 +71,16 @@ namespace Firefly
 	{
 		glDeleteProgram(m_RendererId);
 	}
+	
 	void Shader::Bind()
 	{
 		glUseProgram(m_RendererId);
+	}
+
+	void Shader::BindUniformBlock(const char* name, unsigned int slot)
+	{
+		unsigned int index = glGetUniformBlockIndex(m_RendererId, name);
+		glUniformBlockBinding(m_RendererId, index, slot);
 	}
 
 	unsigned int Shader::Compile(const File& file)

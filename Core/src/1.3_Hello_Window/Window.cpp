@@ -13,6 +13,7 @@ namespace Firefly
 		:m_Width(width), m_Height(height), m_Ratio((width + 0.0f) / height)
 	{
 		Construct();
+		GetOpenGLInfo();
 		RegistCallback();
 	}
 
@@ -127,4 +128,13 @@ namespace Firefly
 		return false;
 	}
 
+	void Window::GetOpenGLInfo()
+	{
+		int maxUniformBufferBindings = 0;
+		glGetIntegerv(GL_MAX_UNIFORM_BUFFER_BINDINGS, &maxUniformBufferBindings);
+		int maxTextureSlots = 0;
+		glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxTextureSlots);
+		std::cout << "MAX TEXTURE SLOT: " << maxTextureSlots << "\n";
+		std::cout << "MAX UNIFORM BINDING POINT: " << maxUniformBufferBindings << "\n";
+	}
 }
