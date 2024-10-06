@@ -12,6 +12,7 @@ project "Core"
     {
         "src/**.cpp",
         "src/**.h",
+        "src/**.tpp",
         "vendor/src/stb/stb_image.cpp"
     }
 

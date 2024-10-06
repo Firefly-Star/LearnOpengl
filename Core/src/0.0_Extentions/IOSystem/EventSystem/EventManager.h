@@ -1,4 +1,5 @@
 #pragma once
+#include "Macros.h"
 #include "Event.h"
 #include "KeyEvent.h"
 #include "MouseEvent.h"
@@ -7,6 +8,8 @@
 #include <functional>
 #include <vector>
 #include <algorithm>
+#include <memory>
+#include <mutex>
 
 #define NAME(type) m_Subscriber##type
 #define DECLARE(type) std::vector<std::function<bool(type##Event&)>> m_Subscriber##type
@@ -20,11 +23,8 @@ namespace Firefly
 {
 	class EventManager
 	{
+		SINGLETON(EventManager);
 	public:
-		static EventManager* GetInstance() { return s_Instance; }
-		static void Init();
-		static void Terminate() { delete s_Instance; }
-
 		void Handle(Event& e);
 
 		SUBSCRIBE(KeyPress);
@@ -35,7 +35,6 @@ namespace Firefly
 		SUBSCRIBE(WindowClose);
 		
 	private:
-		static EventManager* s_Instance;
 		DECLARE(KeyPress);
 		DECLARE(KeyRelease);
 		DECLARE(KeyRepeat);
@@ -43,7 +42,7 @@ namespace Firefly
 		DECLARE(WindowResize);
 		DECLARE(WindowClose);
 	private:
-		EventManager() = default;
+		EventManager();
 		~EventManager() = default;
 	};
 }

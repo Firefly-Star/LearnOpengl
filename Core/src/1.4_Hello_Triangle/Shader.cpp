@@ -83,42 +83,6 @@ namespace Firefly
 		glUniformBlockBinding(m_RendererId, index, slot);
 	}
 
-	void Shader::SetUniform(const char* name, int i)
-	{
-		int location = GetLocation(name);
-		if (location != -1) glUniform1i(location, i);
-	}
-
-	void Shader::SetUniform(const char* name, float f)
-	{
-		int location = GetLocation(name);
-		if (location != -1) glUniform1f(location, f);
-	}
-
-	void Shader::SetUniform(const char* name, glm::vec3 const& v3)
-	{
-		int location = GetLocation(name);
-		if (location != -1) glUniform3fv(location, 1, &v3[0]);
-	}
-
-	void Shader::SetUniform(const char* name, glm::vec4 const& v4)
-	{
-		int location = GetLocation(name);
-		if (location != -1) glUniform4fv(location, 1, &v4[0]);
-	}
-
-	void Shader::SetUniform(const char* name, glm::mat3 const& m3)
-	{
-		int location = GetLocation(name);
-		if (location != -1) glUniformMatrix3fv(location, 1, GL_FALSE, &m3[0][0]);
-	}
-
-	void Shader::SetUniform(const char* name, glm::mat4 const& m4)
-	{
-		int location = GetLocation(name);
-		if (location != -1) glUniformMatrix4fv(location, 1, GL_FALSE, &m4[0][0]);
-	}
-
 	unsigned int Shader::Compile(const File& file)
 	{
 		std::ifstream fs(file.fileName);
@@ -162,8 +126,45 @@ namespace Firefly
 		{
 		case Type::VertexShader: return GL_VERTEX_SHADER;
 		case Type::FragmentShader: return GL_FRAGMENT_SHADER;
+		case Type::GeomotryShader: return GL_GEOMETRY_SHADER;
 		}
 		return 0;
+	}
+
+	void Shader::SetUniform(const char* name, int i)
+	{
+		int location = GetLocation(name);
+		if (location != -1) glUniform1i(location, i);
+	}
+
+	void Shader::SetUniform(const char* name, float f)
+	{
+		int location = GetLocation(name);
+		if (location != -1) glUniform1f(location, f);
+	}
+
+	void Shader::SetUniform(const char* name, glm::vec3 const& v3)
+	{
+		int location = GetLocation(name);
+		if (location != -1) glUniform3fv(location, 1, &v3[0]);
+	}
+
+	void Shader::SetUniform(const char* name, glm::vec4 const& v4)
+	{
+		int location = GetLocation(name);
+		if (location != -1) glUniform4fv(location, 1, &v4[0]);
+	}
+
+	void Shader::SetUniform(const char* name, glm::mat3 const& m3)
+	{
+		int location = GetLocation(name);
+		if (location != -1) glUniformMatrix3fv(location, 1, GL_FALSE, &m3[0][0]);
+	}
+
+	void Shader::SetUniform(const char* name, glm::mat4 const& m4)
+	{
+		int location = GetLocation(name);
+		if (location != -1) glUniformMatrix4fv(location, 1, GL_FALSE, &m4[0][0]);
 	}
 
 	unsigned int Shader::GetLocation(const char* name)

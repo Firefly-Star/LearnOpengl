@@ -4,6 +4,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "0.0_Extentions/Updater/MousePos.h"
+#include "0.0_Extentions/IOSystem/EventSystem/EventManager.h"
 #include "0.0_Extentions/Updater/Time.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
@@ -21,6 +22,7 @@ namespace Firefly
 		Recalculate();
 		KeyPressEvent e(-1, -1);
 		SetCursorMode(e);
+		EventManager::GetInstance().SubscribeKeyPress(std::bind(&View::SetCursorMode, this, std::placeholders::_1));
 	}
 	void View::Update()
 	{
