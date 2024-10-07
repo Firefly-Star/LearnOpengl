@@ -19,6 +19,8 @@ namespace Firefly
 	public:
 		Model(const std::string& path);
 		void Render(Shader& shader);
+		void RenderInstance(Shader& shader, int count);
+		void AppendLayout(std::vector<VertexArray::Layout> const& layouts);
 	private:
 		std::vector<Mesh> m_Meshes;
 		std::unordered_map<std::string, std::shared_ptr<Firefly::Texture>> m_TextureCache;

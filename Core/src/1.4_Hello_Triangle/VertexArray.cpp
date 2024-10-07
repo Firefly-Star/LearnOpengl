@@ -2,9 +2,33 @@
 #include <GLFW/glfw3.h>
 #include "VertexArray.h"
 
+#include "4.8_Instancing/BindManager.h"
+
 namespace Firefly
 {
-	Firefly::VertexArray::VertexArray()
+	VertexArray::Layout::Layout(std::vector<Element> const& layout, VertexBuffer& vbo, int divisor, int stride)
+		: layout(layout), vbo(&vbo), divisor(divisor), stride(stride)
+	{
+	}
+
+	VertexArray::Layout::Layout(Layout const& other)
+		: layout(other.layout), vbo(other.vbo), divisor(other.divisor), stride(other.stride)
+	{
+	}
+
+	VertexArray::Layout& VertexArray::Layout::operator=(Layout const& other)
+	{
+		if (this != &other)
+		{
+			layout = other.layout;
+			vbo = other.vbo;
+			divisor = other.divisor;
+			stride = other.stride;
+		}
+		return *this;
+	}
+
+	VertexArray::VertexArray()
 	{
 		glGenVertexArrays(1, &m_RendererId);
 		glBindVertexArray(m_RendererId);
@@ -34,32 +58,49 @@ namespace Firefly
 	
 	void VertexArray::Bind()
 	{
-		glBindVertexArray(m_RendererId);
+		if (!BindManager::GetInstance().CheckBind(this))
+			glBindVertexArray(m_RendererId);
 	}
 	
-	void VertexArray::SetLayout(const std::vector<Element>& layout)
+	void VertexArray::SetLayout(std::vector<Layout> const& layouts)
 	{
 		Bind();
-		int stride = 0;
-		for (int i = 0; i < layout.size(); i++)
+		int n = layouts.size();
+		int beginIndex = 0;
+		for (int i = 0; i < n; ++i)
 		{
-			stride += layout[i].count * Sizeof(layout[i].type);
-		}
-		size_t offset = 0;
-		for (int i = 0; i < layout.size(); i++)
-		{
-			if (layout[i].type != Type::Padding)
+			int stride = layouts[i].stride;
+			int size = layouts[i].layout.size();
+			if (stride == 0)
 			{
-				glVertexAttribPointer(i, layout[i].count, TypeToEnum(layout[i].type), TypeNormalized(layout[i].type), stride, reinterpret_cast<void*>(offset));
-				glEnableVertexAttribArray(i);
+				for (int j = 0; j < size; ++j)
+				{
+					stride += layouts[i].layout[j].count * Sizeof(layouts[i].layout[j].type);
+				}
 			}
-			offset += layout[i].count * Sizeof(layout[i].type);
+			layouts[i].vbo->Bind();
+			size_t offset = 0;
+			for (int j = 0; j < size; ++j)
+			{
+				if (layouts[i].layout[j].type != Type::Padding)
+				{
+					glVertexAttribPointer(beginIndex, layouts[i].layout[j].count, TypeToEnum(layouts[i].layout[j].type), TypeNormalized(layouts[i].layout[j].type), stride, reinterpret_cast<void*>(offset));
+					glEnableVertexAttribArray(beginIndex);
+					if (layouts[i].divisor != 0)
+					{
+						glVertexAttribDivisor(beginIndex, layouts[i].divisor);
+					}
+					++beginIndex;
+				}
+				offset += layouts[i].layout[j].count * Sizeof(layouts[i].layout[j].type);
+			}
 		}
 	}
 
 	void VertexArray::UnBind()
 	{
 		glBindVertexArray(0);
+			BindManager::GetInstance().UnBind<VertexArray>();
 	}
 
 	unsigned int VertexArray::Sizeof(Type type)
@@ -101,5 +142,7 @@ namespace Firefly
 		}
 		return 0;
 	}
+
+	
 
 }

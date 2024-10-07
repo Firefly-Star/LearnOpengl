@@ -16,10 +16,25 @@ namespace Firefly
 
 	void Model::Render(Shader& shader)
 	{
-		static unsigned int n = static_cast<unsigned int>(m_Meshes.size());
-		for (unsigned int i = 0; i < n; ++i)
+		for (auto& mesh : m_Meshes)
 		{
-			m_Meshes[i].Render(shader);
+			mesh.Render(shader);
+		}
+	}
+
+	void Model::RenderInstance(Shader& shader, int count)
+	{
+		for (auto& mesh : m_Meshes)
+		{
+			mesh.RenderInstance(shader, count);
+		}
+	}
+
+	void Model::AppendLayout(std::vector<VertexArray::Layout> const& layouts)
+	{
+		for (auto& mesh : m_Meshes)
+		{
+			mesh.AppendLayout(layouts);
 		}
 	}
 

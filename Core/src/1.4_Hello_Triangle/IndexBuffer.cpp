@@ -1,4 +1,5 @@
 #include "IndexBuffer.h"
+#include "4.8_Instancing/BindManager.h"
 #include <glad/glad.h>
 
 namespace Firefly
@@ -7,7 +8,7 @@ namespace Firefly
 		:m_Count(size / sizeof(unsigned int))
 	{
 		glGenBuffers(1, &m_RendererId);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererId);
+		Bind();
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
 	}
 
@@ -36,6 +37,13 @@ namespace Firefly
 	
 	void IndexBuffer::Bind()
 	{
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererId);
+		if(!BindManager::GetInstance().CheckBind(this))
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererId);
+	}
+
+	void IndexBuffer::UnBind()
+	{
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		BindManager::GetInstance().UnBind<IndexBuffer>();
 	}
 }

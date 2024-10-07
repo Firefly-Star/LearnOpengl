@@ -2,7 +2,10 @@
 #include <glad/glad.h>
 #include <fstream>
 #include <sstream>
+#include <gtc/type_ptr.hpp>
 #include "Shader.h"
+
+#include "4.8_Instancing/BindManager.h"
 
 namespace Firefly
 {
@@ -74,7 +77,14 @@ namespace Firefly
 	
 	void Shader::Bind()
 	{
-		glUseProgram(m_RendererId);
+		if (!BindManager::GetInstance().CheckBind(this))
+			glUseProgram(m_RendererId);
+	}
+
+	void Shader::UnBind()
+	{
+		glUseProgram(0);
+		BindManager::GetInstance().UnBind<Shader>();
 	}
 
 	void Shader::BindUniformBlock(const char* name, unsigned int slot)
@@ -131,43 +141,49 @@ namespace Firefly
 		return 0;
 	}
 
-	void Shader::SetUniform(const char* name, int i)
+	void Shader::SetUniform(std::string const& name, int i)
 	{
 		int location = GetLocation(name);
 		if (location != -1) glUniform1i(location, i);
 	}
 
-	void Shader::SetUniform(const char* name, float f)
+	void Shader::SetUniform(std::string const& name, float f)
 	{
 		int location = GetLocation(name);
 		if (location != -1) glUniform1f(location, f);
 	}
 
-	void Shader::SetUniform(const char* name, glm::vec3 const& v3)
+	void Shader::SetUniform(std::string const& name, glm::vec2 const& v2, unsigned int count)
 	{
 		int location = GetLocation(name);
-		if (location != -1) glUniform3fv(location, 1, &v3[0]);
+		if (location != -1) glUniform2fv(location, count, glm::value_ptr(v2));
 	}
 
-	void Shader::SetUniform(const char* name, glm::vec4 const& v4)
+	void Shader::SetUniform(std::string const& name, glm::vec3 const& v3, unsigned int count)
 	{
 		int location = GetLocation(name);
-		if (location != -1) glUniform4fv(location, 1, &v4[0]);
+		if (location != -1) glUniform3fv(location, count, &v3[0]);
 	}
 
-	void Shader::SetUniform(const char* name, glm::mat3 const& m3)
+	void Shader::SetUniform(std::string const& name, glm::vec4 const& v4, unsigned int count)
 	{
 		int location = GetLocation(name);
-		if (location != -1) glUniformMatrix3fv(location, 1, GL_FALSE, &m3[0][0]);
+		if (location != -1) glUniform4fv(location, count, &v4[0]);
 	}
 
-	void Shader::SetUniform(const char* name, glm::mat4 const& m4)
+	void Shader::SetUniform(std::string const& name, glm::mat3 const& m3, unsigned int count)
 	{
 		int location = GetLocation(name);
-		if (location != -1) glUniformMatrix4fv(location, 1, GL_FALSE, &m4[0][0]);
+		if (location != -1) glUniformMatrix3fv(location, count, GL_FALSE, &m3[0][0]);
 	}
 
-	unsigned int Shader::GetLocation(const char* name)
+	void Shader::SetUniform(std::string const& name, glm::mat4 const& m4, unsigned int count)
+	{
+		int location = GetLocation(name);
+		if (location != -1) glUniformMatrix4fv(location, count, GL_FALSE, &m4[0][0]);
+	}
+
+	unsigned int Shader::GetLocation(std::string const& name)
 	{
 		auto it = m_UniformCache.find(name);
 		if (it != m_UniformCache.end())
@@ -176,7 +192,7 @@ namespace Firefly
 		}
 		else
 		{
-			int location = glGetUniformLocation(m_RendererId, name);
+			int location = glGetUniformLocation(m_RendererId, name.c_str());
 			m_UniformCache[name] = location;
 			return location;
 		}

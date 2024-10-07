@@ -31,3 +31,5 @@
 #include "4.4_Cube_Texture/SkyboxRenderer.h"
 
 #include "4.6_Advanced_GLSL/UniformBuffer.h"
+
+#include "4.8_Instancing/BindManager.h"

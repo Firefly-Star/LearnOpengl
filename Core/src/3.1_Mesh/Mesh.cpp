@@ -12,20 +12,58 @@ namespace Firefly
 		m_Vertices(vertices), m_Indices(indices), m_Textures(textures)
 	{
 		m_VAO.SetLayout({
-			{ VertexArray::Type::Float, 3 },
-			{ VertexArray::Type::Float, 3 },
-			{ VertexArray::Type::Float, 2 },
-			{ VertexArray::Type::Float, 3 },
-			{ VertexArray::Type::Float, 3 },
-			{ VertexArray::Type::Int, 4 },
-			{ VertexArray::Type::Float, 4 }
+			{
+				{
+					{ VertexArray::Type::Float, 3 },
+					{ VertexArray::Type::Float, 3 },
+					{ VertexArray::Type::Float, 2 },
+					{ VertexArray::Type::Float, 3 },
+					{ VertexArray::Type::Float, 3 },
+					{ VertexArray::Type::Int, 4 },
+					{ VertexArray::Type::Float, 4 }
+				}, m_VBO
+			}
 			});
 
 		VertexArray::UnBind();
-
 	}
 
 	void Mesh::Render(Shader& shader)
+	{
+		SetTexture(shader);
+		m_VAO.Bind();
+		glDrawElements(GL_TRIANGLES, m_IBO.GetCount(), GL_UNSIGNED_INT, 0);
+	}
+
+	void Mesh::RenderInstance(Shader& shader, int count)
+	{
+		SetTexture(shader);
+		m_VAO.Bind();
+		glDrawElementsInstanced(GL_TRIANGLES, m_IBO.GetCount(), GL_UNSIGNED_INT, 0, count);
+	}
+
+	void Mesh::AppendLayout(std::vector<VertexArray::Layout> const& layouts)
+	{
+		std::vector<VertexArray::Layout> param = {
+			{
+				{
+					{ VertexArray::Type::Float, 3 },
+					{ VertexArray::Type::Float, 3 },
+					{ VertexArray::Type::Float, 2 },
+					{ VertexArray::Type::Float, 3 },
+					{ VertexArray::Type::Float, 3 },
+					{ VertexArray::Type::Int, 4 },
+					{ VertexArray::Type::Float, 4 }
+				}, m_VBO
+			}
+		};
+		param.insert(param.end(), layouts.begin(), layouts.end());
+		m_VAO.SetLayout(param);
+
+		VertexArray::UnBind();
+	}
+
+	void Mesh::SetTexture(Shader& shader)
 	{
 		shader.Bind();
 		unsigned int diffuseNr = 1;
@@ -45,12 +83,7 @@ namespace Firefly
 			case Texture::Type::Normal: name = "model.texture_normal" + std::to_string(normalNr++); break;
 			case Texture::Type::Ambient: name = "model.texture_height" + std::to_string(heightNr++); break;
 			}
-			shader.SetUniform(("material." + name).c_str(), i);
+			shader.SetUniform(name, i);
 		}
-		m_VAO.Bind();
-		glDrawElements(GL_TRIANGLES, m_IBO.GetCount(), GL_UNSIGNED_INT, 0);
-
-		VertexArray::UnBind();
-		Texture::Active(0);
 	}
 }

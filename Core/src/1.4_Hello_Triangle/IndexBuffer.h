@@ -11,6 +11,7 @@ namespace Firefly
 		IndexBuffer(void* data, unsigned int size);
 		~IndexBuffer();
 		void Bind();
+		static void UnBind();
 		unsigned int GetCount() { return m_Count; }
 	private:
 		unsigned int m_RendererId;

@@ -4,12 +4,22 @@
 #include <gtc/matrix_transform.hpp>
 #include <array>
 #include <variant>
+#include <memory>
 
 namespace Firefly
 {
 	using Varray = std::variant<std::array<float, 4>, std::array<float, 6>>;
 	class Projection
 	{
+	public:
+		enum class Type
+		{
+			None = 0,
+			Ortho, Perspective
+		};
+	public:
+		template<Type type, typename T>
+		static std::shared_ptr<Projection> Create(T params);
 	public:
 		Projection() : m_Projection() {}
 		virtual ~Projection() {}
@@ -19,6 +29,7 @@ namespace Firefly
 		glm::mat4 m_Projection;
 		virtual void Recalculate() = 0;
 	};
+
 
 	class OrthoProjection : public Projection
 	{
@@ -65,3 +76,4 @@ namespace Firefly
 	};
 
 }
+#include "Projection.tpp"

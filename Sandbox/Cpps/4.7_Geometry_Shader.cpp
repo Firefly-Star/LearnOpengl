@@ -13,6 +13,7 @@ int main()
 	Window::Init(800, 800);
 	Window& window = Window::GetInstance();
 	EventManager::Init();
+	BindManager::Init();
 	ShaderLibrary::Init();
 	SpriteRenderer::Init();
 	SkyboxRenderer::Init();
@@ -104,7 +105,7 @@ int main()
 		basicShader.SetUniform("flashLight.direction", view.GetDirection());
 		basicShader.SetUniform("observePos", view.GetPosition());
 		ourModel.Render(basicShader);
-		
+#if 1
 		// Explode model
 		float time = Time::GetTime();
 		explodeShader.Bind();
@@ -123,6 +124,7 @@ int main()
 		normalShader.SetUniform("projectionMat", projection->GetProjection());
 		normalShader.SetUniform("length", 0.05f);
 		ourModel.Render(normalShader);
+#endif
 		});
 
 	SkyboxRenderer::Terminate();

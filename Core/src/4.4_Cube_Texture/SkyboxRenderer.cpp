@@ -67,7 +67,11 @@ namespace Firefly
 		:m_VAO(), m_VBO(vertices, sizeof(vertices)), m_IBO(indices, sizeof(indices))
 	{
 		m_VAO.SetLayout({
-			{VertexArray::Type::Float, 3}
+			{
+				{
+					{VertexArray::Type::Float, 3}
+				}, m_VBO
+			}
 			});
 	}
 

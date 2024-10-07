@@ -11,6 +11,7 @@ namespace Firefly
 		VertexBuffer(void* data, unsigned int size);
 		~VertexBuffer();
 		void Bind();
+		static void UnBind();
 	private :
 		unsigned int m_RendererId;
 	};

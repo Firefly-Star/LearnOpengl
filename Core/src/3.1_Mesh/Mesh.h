@@ -11,6 +11,7 @@
 #include "1.4_Hello_Triangle/IndexBuffer.h"
 #include "1.4_Hello_Triangle/VertexBuffer.h"
 
+
 namespace Firefly
 {
 	class Mesh
@@ -30,6 +31,8 @@ namespace Firefly
         };
 		Mesh(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices, const std::vector<std::shared_ptr<Texture>>& textures);
 		void Render(Shader& shader);
+		void RenderInstance(Shader& shader, int count);
+		void AppendLayout(std::vector<VertexArray::Layout> const& layouts);
 	private:
 		VertexArray m_VAO;
 		VertexBuffer m_VBO;
@@ -37,6 +40,8 @@ namespace Firefly
 		std::vector<Vertex> m_Vertices;
 		std::vector<unsigned int> m_Indices;
 		std::vector<std::shared_ptr<Texture>> m_Textures;
+	private:
+		void SetTexture(Shader& shader);
 	};
 
 }

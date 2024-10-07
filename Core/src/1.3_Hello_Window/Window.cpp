@@ -134,7 +134,10 @@ namespace Firefly
 		glGetIntegerv(GL_MAX_UNIFORM_BUFFER_BINDINGS, &maxUniformBufferBindings);
 		int maxTextureSlots = 0;
 		glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxTextureSlots);
+		int maxVertexAttib = 0;
+		glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &maxVertexAttib);
 		std::cout << "MAX TEXTURE SLOT: " << maxTextureSlots << "\n";
 		std::cout << "MAX UNIFORM BINDING POINT: " << maxUniformBufferBindings << "\n";
+		std::cout << "MAX VERTEX ATTRIB: " << maxVertexAttib << "\n";
 	}
 }
