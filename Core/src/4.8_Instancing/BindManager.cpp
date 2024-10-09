@@ -8,6 +8,7 @@ namespace Firefly
 	std::once_flag BindManager::s_OnceFlag;
 
 	BindManager::BindManager()
+		:m_Current()
 	{
 	}
 	BindManager::~BindManager()

@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 #include <stb_image.h>
 #include <iostream>
+#include "4.8_Instancing/BindManager.h"
 
 namespace Firefly
 {
@@ -60,8 +61,11 @@ namespace Firefly
 
 	void Texture2D::Bind(unsigned int slot)
 	{
-		glActiveTexture(GL_TEXTURE0 + slot);
-		glBindTexture(GL_TEXTURE_2D, m_RendererId);
+		if (!BindManager::GetInstance().CheckBind(this, slot))
+		{
+			glActiveTexture(GL_TEXTURE0 + slot);
+			glBindTexture(GL_TEXTURE_2D, m_RendererId);
+		}
 	}
 
 	void Texture2D::LoadTexture(const std::string& fileName)
@@ -129,8 +133,11 @@ namespace Firefly
 
 	void TextureCube::Bind(unsigned int slot)
 	{
-		glActiveTexture(GL_TEXTURE0 + slot);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererId);
+		if (!BindManager::GetInstance().CheckBind(this, slot))
+		{
+			glActiveTexture(GL_TEXTURE0 + slot);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererId);
+		}
 	}
 	
 	void TextureCube::LoadTexture(const std::vector<std::string>& fileNames)

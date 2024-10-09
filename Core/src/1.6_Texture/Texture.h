@@ -36,7 +36,7 @@ namespace Firefly
 		Texture2D(const std::string& fileName, Type type = Type::None);
 		virtual ~Texture2D();
 		virtual void Bind(unsigned int slot = 0) override;
-
+		
 	private:
 		void LoadTexture(const std::string& fileName);
 	};

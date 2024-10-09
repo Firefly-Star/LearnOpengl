@@ -29,6 +29,18 @@ namespace Firefly
 	}
 
 	template<typename T>
+	bool BindManager::CheckBind(T* object, int slot)
+	{
+		bool result = false;
+		if constexpr (std::is_base_of_v<T, Texture2D>)
+		{
+			result = object == m_Current.textures[slot];
+			if (!result) m_Current.textures[slot] = object;
+		}
+		return result;
+	}
+
+	template<typename T>
 	void BindManager::UnBind()
 	{
 		if constexpr (std::is_same_v<T, IndexBuffer>)
@@ -48,9 +60,17 @@ namespace Firefly
 			m_Current.vbo = nullptr;
 		}
 	}
+	template<typename T>
+	void BindManager::UnBind(int slot)
+	{
+		if constexpr (std::is_same_v<T, Texture>)
+		{
+			m_Current.textures[slot] = nullptr;
+		}
+	}
 	
 	template<typename T>
-	T& BindManager::GetCurrent()
+	T* BindManager::GetCurrent()
 	{
 		if constexpr (std::is_same_v<T, IndexBuffer>)
 		{
@@ -67,6 +87,15 @@ namespace Firefly
 		if constexpr (std::is_same_v<T, VertexBuffer>)
 		{
 			return m_Current.vbo;
+		}
+	}
+
+	template<typename T>
+	T* BindManager::GetCurrent(int slot)
+	{
+		if constexpr (std::is_same_v<T, Texture>)
+		{
+			return m_Current.textures[slot];
 		}
 	}
 }

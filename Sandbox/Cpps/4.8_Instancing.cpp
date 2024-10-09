@@ -36,7 +36,7 @@ int main()
 	glm::mat4 modelMatPlanet(1.0f);
 
 	float radius = 10.0f;
-	int count = 100000;
+	int count = 10000;
 	glm::mat4* modelMatRock = new glm::mat4[count];
 	srand(1);
 	glm::mat4 e(1.0f);

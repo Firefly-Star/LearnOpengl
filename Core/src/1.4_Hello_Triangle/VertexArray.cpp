@@ -65,12 +65,12 @@ namespace Firefly
 	void VertexArray::SetLayout(std::vector<Layout> const& layouts)
 	{
 		Bind();
-		int n = layouts.size();
+		int n = static_cast<int>(layouts.size());
 		int beginIndex = 0;
 		for (int i = 0; i < n; ++i)
 		{
 			int stride = layouts[i].stride;
-			int size = layouts[i].layout.size();
+			int size = static_cast<int>(layouts[i].layout.size());
 			if (stride == 0)
 			{
 				for (int j = 0; j < size; ++j)

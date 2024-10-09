@@ -33,3 +33,5 @@
 #include "4.6_Advanced_GLSL/UniformBuffer.h"
 
 #include "4.8_Instancing/BindManager.h"
+
+#include "4.9_MSAA/MultiSampleFramebuffer.h"

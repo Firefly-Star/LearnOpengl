@@ -55,6 +55,8 @@ namespace Firefly
 		std::cout << "OpenGL version: " << version << std::endl;
 
 		glfwSetWindowUserPointer(m_Window, &m_EventHandler);
+
+		glfwSwapInterval(1);
 	}
 
 	void Window::RegistCallback()

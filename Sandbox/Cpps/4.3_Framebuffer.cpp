@@ -11,6 +11,7 @@ int main()
 {
 	Window::Init(1200, 800);
 	Window& windowInstance = Window::GetInstance();
+	BindManager::Init();
 	EventManager::Init();
 	SpriteRenderer::Init();
 	ShaderLibrary::Init();
@@ -50,20 +51,22 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT);
 		basicShader.Bind();
 		texture->Bind(0);
-		glUniform1i(basicShader.GetLocation("tex"), 0);
-		glUniformMatrix4fv(basicShader.GetLocation("model"), 1, GL_FALSE, &model[0][0]);
+		basicShader.SetUniform("tex", 0);
+		basicShader.SetUniform("model", model);
 		SpriteRenderer::GetInstance().Render();
+
 
 		fb.UnBind();
 		glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
-		postShader.Bind();
-		fb.BindTexture(2);
-		glUniform1i(postShader.GetLocation("tex"), 2);
-		glUniformMatrix4fv(postShader.GetLocation("model"), 1, GL_FALSE, &modelForframe[0][0]);
-		glUniformMatrix3fv(postShader.GetLocation("kernel"), 1, GL_FALSE, &kernel2[0][0]);
-		glUniform1f(postShader.GetLocation("offset"), offset);
-		SpriteRenderer::GetInstance().Render();
+		fb.DirectRender();
+		//postShader.Bind();
+		//fb.BindTexture(2);
+		//postShader.SetUniform("tex", 2);
+		//postShader.SetUniform("model", modelForframe);
+		//postShader.SetUniform("kernel", kernel2);
+		//postShader.SetUniform("offset", offset);
+		//SpriteRenderer::GetInstance().Render();
 		});
 
 	SpriteRenderer::Terminate();

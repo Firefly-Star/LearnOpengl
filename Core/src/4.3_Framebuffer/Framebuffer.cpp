@@ -82,6 +82,14 @@ namespace Firefly
 		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererId);
 	}
 
+	void Framebuffer::DirectRender(int x0, int y0, int x1, int y1)
+	{
+		glBlitNamedFramebuffer(m_RendererId, 0, 
+			x0, y0, x1 == 0 ? m_Width : x1, y1 == 0 ? m_Height : y1,
+			x0, y0, x1 == 0 ? m_Width : x1, y1 == 0 ? m_Height : y1,
+			GL_COLOR_BUFFER_BIT, GL_NEAREST);
+	}
+
 	void Framebuffer::Bind()
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererId);
