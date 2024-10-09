@@ -40,6 +40,11 @@ namespace Firefly
 		LoadTexture(fileName);
 	}
 
+	Texture2D::Texture2D(unsigned char* data, int width, int height)
+	{
+
+	}
+
 	Texture2D::~Texture2D()
 	{
 		glDeleteTextures(1, &m_RendererId);

@@ -48,7 +48,7 @@ int main()
 	Projection* projection = new PerspectiveProjection(params);
 	View view;
 	view.SetSpeed({3.0f, 3.0f, 3.0f, 0.5f});
-	EventManager::GetInstance()->SubscribeKeyPress(std::bind(&View::SetCursorMode, &view, std::placeholders::_1));
+	EventManager::GetInstance().SubscribeKeyPress(std::bind(&View::SetCursorMode, &view, std::placeholders::_1));
 
 	Firefly::FlashLight light;
 	light.ambientColor = glm::vec3(0.2f, 0.2f, 0.2f);

@@ -34,6 +34,7 @@ namespace Firefly
 		MOVE_ONLY(Texture2D);
 	public:
 		Texture2D(const std::string& fileName, Type type = Type::None);
+		Texture2D(unsigned char* data, int width, int height);
 		virtual ~Texture2D();
 		virtual void Bind(unsigned int slot = 0) override;
 		

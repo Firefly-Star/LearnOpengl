@@ -30,8 +30,11 @@ uniform FlashLight flashLight;
 
 vec3 CalFlashLight(FlashLight light, vec3 norm, vec3 observeDir)
 {
-	vec3 diffuseColor = texture(model.texture_diffuse0, v_TexCoord).rgb;
-	vec3 specularColor = texture(model.texture_specular0, v_TexCoord).rgb;
+	vec3 diffuseColoro = texture(model.texture_diffuse0, v_TexCoord).rgb;
+	vec3 specularColoro = texture(model.texture_specular0, v_TexCoord).rgb;
+
+	vec3 diffuseColor = pow(diffuseColoro, vec3(2.2f));
+	vec3 specularColor = pow(specularColoro, vec3(2.2f));
 
 	vec3 ambient = diffuseColor * light.ambientColor;
 
@@ -67,5 +70,6 @@ void main()
 	vec3 norm = normalize(v_Normal);
 	vec3 observeDir = normalize(observePos - v_FragPos);
 	color = vec4(CalFlashLight(flashLight, norm, observeDir), 1.0f);
-	//color = vec4(v_Normal, 1.0f);
+	float gamma = 2.2f;
+	color = pow(color, vec4(1.0f / gamma));
 }

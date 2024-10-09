@@ -52,8 +52,8 @@ int main()
 	Firefly::FlashLight light;
 	{
 		
-		light.ambientColor = glm::vec3(0.2f, 0.2f, 0.2f);
-		light.diffuseColor = glm::vec3(0.5f, 0.5f, 0.5f);
+		light.ambientColor = glm::vec3(0.1f, 0.1f, 0.1f);
+		light.diffuseColor = glm::vec3(0.2f, 0.2f, 0.2f);
 		light.specularColor = glm::vec3(1.0f, 1.0f, 1.0f);
 		light.innerCutOff = cos(glm::radians(12.5f));
 		light.outerCutOff = cos(glm::radians(17.5f));
@@ -88,11 +88,15 @@ int main()
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
+
+	//glEnable(GL_FRAMEBUFFER_SRGB);
+
 	window.RenderLoop([&]() {
 		Updater::Update();
 		view.Update();
 		glEnable(GL_DEPTH_TEST);
 		glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+		//glClearColor(pow(0.2f, 2.2f), pow(0.2f, 2.2f), pow(0.2f, 2.2f), 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glm::mat4 pv = projection->GetProjection() * view.GetView();
@@ -105,7 +109,7 @@ int main()
 		basicShader.SetUniform("flashLight.direction", view.GetDirection());
 		basicShader.SetUniform("observePos", view.GetPosition());
 		ourModel.Render(basicShader);
-#if 1
+#if 0
 		// Explode model
 		float time = Time::GetTime();
 		explodeShader.Bind();
