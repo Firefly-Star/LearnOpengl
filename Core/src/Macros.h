@@ -29,6 +29,10 @@ private: \
     SINGLETON_DELETE(x) \
     SINGLETON_FUNC(x)
 
+#define SINGLETON_DEFINATION(x)\
+std::unique_ptr<x> x::s_Instance = nullptr;\
+std::once_flag x::s_OnceFlag; 
+
 #define MOVE_ONLY(x)\
 public:\
     x(x&& other) noexcept;\

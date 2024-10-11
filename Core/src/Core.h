@@ -7,6 +7,7 @@
 #include "0.0_Extentions/Updater/Time.h"
 #include "0.0_Extentions/Updater/MousePos.h"
 #include "0.0_Extentions/Test/Benchmark.h"
+#include "0.0_Extentions/Manager/SingletonManager.h"
 
 #include "1.3_Hello_Window/Window.h"
 

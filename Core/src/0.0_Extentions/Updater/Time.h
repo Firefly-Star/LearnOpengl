@@ -1,19 +1,24 @@
 #pragma once
+
+#include "Macros.h"
+
+#include <memory>
+#include <mutex>
+
 namespace Firefly
 {
 	class Time
 	{
+		SINGLETON(Time);
 	public:
-		static void Update()
-		{
-			float time = static_cast<float>(glfwGetTime());
-			s_DeltaTime = time - s_Time;
-			s_Time = time;
-		}
-		static float GetTime() { return s_Time; }
-		static float GetDeltaTime() { return s_DeltaTime; }
+		void Update();
+		float GetTime() const { return m_Time; }
+		float GetDeltaTime() const { return m_Deltatime; }
 	private:
-		static float s_Time;
-		static float s_DeltaTime;
+		float m_Time;
+		float m_Deltatime;
+	private:
+		Time();
+		~Time() = default;
 	};
 }

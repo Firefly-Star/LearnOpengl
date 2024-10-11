@@ -12,11 +12,7 @@ int main()
 {
 	Window::Init(800, 800);
 	Window& window = Window::GetInstance();
-	EventManager::Init();
-	BindManager::Init();
-	ShaderLibrary::Init();
-	SpriteRenderer::Init();
-	SkyboxRenderer::Init();
+	SingletonManager::Init();
 
 	Shader basicShader({
 		{Shader::Type::VertexShader, ASSET("3.2_Model/model_vertex.glsl")},
@@ -109,9 +105,9 @@ int main()
 		basicShader.SetUniform("flashLight.direction", view.GetDirection());
 		basicShader.SetUniform("observePos", view.GetPosition());
 		ourModel.Render(basicShader);
-#if 0
+#if 1
 		// Explode model
-		float time = Time::GetTime();
+		float time = Time::GetInstance().GetTime();
 		explodeShader.Bind();
 		
 		explodeShader.SetUniform("flashLight.position", view.GetPosition());
@@ -131,11 +127,7 @@ int main()
 #endif
 		});
 
-	SkyboxRenderer::Terminate();
-	SpriteRenderer::Terminate();
-	ShaderLibrary::Terminate();
-	EventManager::Terminate();
-	Window::Terminate();
+	SingletonManager::Terminate();
 }
 #endif
 

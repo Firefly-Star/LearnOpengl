@@ -8,8 +8,8 @@ namespace Firefly
 	public:
 		static void Update()
 		{
-			MousePos::Update();
-			Time::Update();
+			MousePos::GetInstance().Update();
+			Time::GetInstance().Update();
 		}
 	};
 }

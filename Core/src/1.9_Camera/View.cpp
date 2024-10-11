@@ -3,6 +3,7 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include "1.3_Hello_Window/Window.h"
 #include "0.0_Extentions/Updater/MousePos.h"
 #include "0.0_Extentions/IOSystem/EventSystem/EventManager.h"
 #include "0.0_Extentions/Updater/Time.h"
@@ -16,7 +17,7 @@
 namespace Firefly
 {
 	View::View(const glm::vec3& position, bool enableRotate, float pitch, float yaw, float pitchMax)
-		:m_Pitch(pitch), m_Yaw(yaw), m_Position(position), PITCH_MAX(pitchMax), 
+		:m_Pitch(pitch), m_Yaw(yaw), m_Position(position), PITCH_MAX(glm::radians(pitchMax)), 
 		m_SpeedX(0.0f), m_SpeedY(0.0f), m_RotateSensitive(0.0f), m_EnableRotate(enableRotate)
 	{
 		Recalculate();
@@ -26,7 +27,7 @@ namespace Firefly
 	}
 	void View::Update()
 	{
-		float deltaTime = Time::GetDeltaTime();
+		float deltaTime = Time::GetInstance().GetDeltaTime();
 
 		glm::vec3 moveDirection(-sin(m_Yaw), 0.0f, -cos(m_Yaw));
 		glm::vec3 moveRight(cos(m_Yaw), 0.0f, -sin(m_Yaw));
@@ -57,13 +58,13 @@ namespace Firefly
 
 		if (m_EnableRotate)
 		{
-			float deltaX = MousePos::GetDeltaX();
-			float deltaY = MousePos::GetDeltaY();
-
-			
+			float deltaX = MousePos::GetInstance().GetDeltaX();
+			float deltaY = MousePos::GetInstance().GetDeltaY();
 
 			m_Yaw -= deltaX * deltaTime * m_RotateSensitive;
 			m_Pitch -= deltaY * deltaTime * m_RotateSensitive;
+			m_Pitch = m_Pitch <= PITCH_MAX ? m_Pitch : PITCH_MAX;
+			m_Pitch = m_Pitch >= -PITCH_MAX ? m_Pitch : -PITCH_MAX;
 		}
 
 		Recalculate();
