@@ -1,7 +1,7 @@
 #include "Macros.h"
 
-#define ACTIVE_LESSON_MAJOR 4
-#define ACTIVE_LESSON_MINOR 7
+#define ACTIVE_LESSON_MAJOR 5
+#define ACTIVE_LESSON_MINOR 3
 #define TEST				0
 
 #define CHECK_ACTIVE(major, minor, test)\

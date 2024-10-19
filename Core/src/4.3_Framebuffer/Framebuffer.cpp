@@ -6,12 +6,53 @@
 
 namespace Firefly
 {
-	Framebuffer::Framebuffer(int width, int height)
-		:m_Width(width), m_Height(height)
+	// ---------------BaseFramebuffer------------------------
+	BaseFramebuffer::BaseFramebuffer(int width, int height)
+		:m_RendererId(0), m_Width(width), m_Height(height)
 	{
 		glGenFramebuffers(1, &m_RendererId);
 		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererId);
+	}
 
+	BaseFramebuffer::~BaseFramebuffer()
+	{
+		glDeleteFramebuffers(1, &m_RendererId);
+	}
+
+	BaseFramebuffer::BaseFramebuffer(BaseFramebuffer&& other) noexcept
+		:m_RendererId(other.m_RendererId), m_Width(other.m_Width), m_Height(other.m_Height)
+	{
+		other.m_RendererId = 0;
+	}
+
+	BaseFramebuffer& BaseFramebuffer::operator=(BaseFramebuffer&& other) noexcept
+	{
+		if (this != &other)
+		{
+			glDeleteFramebuffers(1, &m_RendererId);
+			m_RendererId = other.m_RendererId;
+			m_Width = other.m_Width;
+			m_Height = other.m_Height;
+			other.m_RendererId = 0;
+		}
+		return *this;
+	}
+
+	void BaseFramebuffer::Bind()
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererId);
+	}
+
+	void BaseFramebuffer::UnBind()
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
+	// ---------------Framebuffer---------------
+
+	Framebuffer::Framebuffer(int width, int height)
+		:BaseFramebuffer(width, height)
+	{
 		glGenTextures(1, &m_Texture);
 		glBindTexture(GL_TEXTURE_2D, m_Texture);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
@@ -44,14 +85,11 @@ namespace Firefly
 	{
 		glDeleteTextures(1, &m_Texture);
 		glDeleteRenderbuffers(1, &m_Renderbuffer);
-		glDeleteFramebuffers(1, &m_RendererId);
 	}
 
 	Framebuffer::Framebuffer(Framebuffer&& other) noexcept
-		:m_RendererId(other.m_RendererId), m_Texture(other.m_Texture), m_Renderbuffer(other.m_Renderbuffer),
-		m_Height(other.m_Height), m_Width(other.m_Width)
+		:m_Texture(other.m_Texture), m_Renderbuffer(other.m_Renderbuffer), BaseFramebuffer(std::move(other))
 	{
-		other.m_RendererId = 0;
 		other.m_Renderbuffer = 0;
 		other.m_Texture = 0;
 	}
@@ -60,26 +98,18 @@ namespace Firefly
 	{
 		if (this != &other)
 		{
+			BaseFramebuffer::operator=(std::move(other));
+
 			glDeleteTextures(1, &m_Texture);
 			glDeleteRenderbuffers(1, &m_Renderbuffer);
-			glDeleteFramebuffers(1, &m_RendererId);
 
-			m_RendererId = other.m_RendererId;
 			m_Texture = other.m_Texture;
 			m_Renderbuffer = other.m_Renderbuffer;
-			m_Height = other.m_Height;
-			m_Width = other.m_Width;
 
-			other.m_RendererId = 0;
 			other.m_Renderbuffer = 0;
 			other.m_Texture = 0;
 		}
 		return *this;
-	}
-
-	void Framebuffer::PrepareForRender()
-	{
-		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererId);
 	}
 
 	void Framebuffer::DirectRender(int x0, int y0, int x1, int y1)
@@ -88,16 +118,6 @@ namespace Firefly
 			x0, y0, x1 == 0 ? m_Width : x1, y1 == 0 ? m_Height : y1,
 			x0, y0, x1 == 0 ? m_Width : x1, y1 == 0 ? m_Height : y1,
 			GL_COLOR_BUFFER_BIT, GL_NEAREST);
-	}
-
-	void Framebuffer::Bind()
-	{
-		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererId);
-	}
-
-	void Framebuffer::UnBind()
-	{
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
 	void Framebuffer::BindTexture(unsigned int slot)

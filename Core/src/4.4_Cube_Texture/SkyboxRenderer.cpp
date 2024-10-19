@@ -73,6 +73,7 @@ namespace Firefly
 				}, m_VBO
 			}
 			});
+		m_VAO.UnBind();
 	}
 
 	SkyboxRenderer::~SkyboxRenderer()

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <functional>
+
 namespace Firefly
 {
 	class SingletonManager
@@ -8,5 +10,4 @@ namespace Firefly
 		static void Init();
 		static void Terminate();
 	};
-
 }

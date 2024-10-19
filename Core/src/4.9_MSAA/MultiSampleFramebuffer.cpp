@@ -6,30 +6,25 @@
 namespace Firefly
 {
 	MultiSampleFramebuffer::MultiSampleFramebuffer(MultiSampleFramebuffer&& other) noexcept
-		:m_Height(other.m_Height), m_Width(other.m_Width), m_Samples(other.m_Samples),
-		m_RendererId(other.m_RendererId), m_Texture(other.m_Texture), m_Renderbuffer(other.m_Renderbuffer)
+		:m_Samples(other.m_Samples), m_Texture(other.m_Texture), m_Renderbuffer(other.m_Renderbuffer), BaseFramebuffer(std::move(other))
 	{
 		other.m_Renderbuffer = 0;
 		other.m_Texture = 0;
-		other.m_RendererId = 0;
 	}
 
 	MultiSampleFramebuffer& MultiSampleFramebuffer::operator=(MultiSampleFramebuffer&& other) noexcept
 	{
 		if (this != &other)
 		{
+			BaseFramebuffer::operator=(std::move(other));
+
 			glDeleteTextures(1, &m_Texture);
 			glDeleteRenderbuffers(1, &m_Renderbuffer);
-			glDeleteFramebuffers(1, &m_RendererId);
 			
 			m_Texture = other.m_Texture;
 			m_Renderbuffer = other.m_Renderbuffer;
-			m_RendererId = other.m_RendererId;
-			m_Width = other.m_Width;
-			m_Height = other.m_Height;
 			m_Samples = other.m_Samples;
 			
-			other.m_RendererId = 0;
 			other.m_Texture = 0;
 			other.m_Renderbuffer = 0;
 		}
@@ -37,11 +32,8 @@ namespace Firefly
 	}
 
 	MultiSampleFramebuffer::MultiSampleFramebuffer(int width, int height, int samples)
-		:m_Height(height), m_Width(width), m_Samples(samples), m_RendererId(0)
+		: BaseFramebuffer(width, height), m_Samples(samples)
 	{
-		glGenFramebuffers(1, &m_RendererId);
-		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererId);
-
 		glGenTextures(1, &m_Texture);
 		glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_Texture);
 		glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, GL_RGBA, width, height, GL_TRUE);
@@ -74,12 +66,6 @@ namespace Firefly
 	{
 		glDeleteTextures(1, &m_Texture);
 		glDeleteRenderbuffers(1, &m_Renderbuffer);
-		glDeleteFramebuffers(1, &m_RendererId);
-	}
-	
-	void MultiSampleFramebuffer::PrepareForRender()
-	{
-		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererId);
 	}
 	
 	void MultiSampleFramebuffer::CopyTo(int destRendererId)
@@ -90,13 +76,4 @@ namespace Firefly
 			GL_COLOR_BUFFER_BIT, GL_NEAREST);
 	}
 	
-	void MultiSampleFramebuffer::Bind()
-	{
-		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererId);
-	}
-	
-	void MultiSampleFramebuffer::UnBind()
-	{
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	}
 }

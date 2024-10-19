@@ -2,6 +2,7 @@
 
 #include "0.0_Extentions/IOSystem/EventSystem/EventManager.h"
 #include "0.0_Extentions/Updater/MousePos.h"
+#include "0.0_Extentions/Updater/MouseMode.h"
 #include "0.0_Extentions/Updater/Time.h"
 #include "4.3_Framebuffer/ShaderLibrary.h"
 #include "4.3_Framebuffer/SpriteRenderer.h"
@@ -21,11 +22,13 @@ namespace Firefly
 		
 		Time::Init();
 		MousePos::Init();
+		MouseMode::Init();
 	}
 
 	void SingletonManager::Terminate()
 	{
-		MousePos::Init();
+		MouseMode::Terminate();
+		MousePos::Terminate();
 		Time::Terminate();
 
 		SkyboxRenderer::Terminate();

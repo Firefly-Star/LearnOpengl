@@ -8,9 +8,7 @@ using namespace Firefly;
 int main()
 {
 	Window::Init(1000, 1000);
-	BindManager::Init();
-	EventManager::Init();
-	ShaderLibrary::Init();
+	SingletonManager::Init();
 
 	Window& windowInstance = Window::GetInstance();
 
@@ -66,7 +64,7 @@ int main()
 
 	Updater::Update();
 	int count = 0;
-	float time = Time::GetTime();
+	float time = Time::GetInstance().GetTime();
 	windowInstance.RenderLoop([&]() {
 
 		multifbo.Bind();
@@ -82,7 +80,7 @@ int main()
 		++count;
 		if (count == 1000)
 		{
-			float temp = Time::GetTime();
+			float temp = Time::GetInstance().GetTime();
 			std::cout << "Average frame rate: " << 1000 / (temp - time) << "\n";
 			time = temp;
 			count = 0;
@@ -94,9 +92,6 @@ int main()
 		multifbo.CopyTo(0);
 		});
 	
-	ShaderLibrary::Terminate();
-	EventManager::Terminate();
-	BindManager::Terminate();
 	Window::Terminate();
 }
 

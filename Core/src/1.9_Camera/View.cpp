@@ -16,44 +16,46 @@
 
 namespace Firefly
 {
-	View::View(const glm::vec3& position, bool enableRotate, float pitch, float yaw, float pitchMax)
-		:m_Pitch(pitch), m_Yaw(yaw), m_Position(position), PITCH_MAX(glm::radians(pitchMax)), 
-		m_SpeedX(0.0f), m_SpeedY(0.0f), m_RotateSensitive(0.0f), m_EnableRotate(enableRotate)
+	View::View(const glm::vec3& position, const glm::vec3& direction, bool enableRotate, float pitchMax)
+		: m_Position(position), m_Direction(direction), m_EnableRotate(enableRotate), PITCH_MAX(pitchMax),
+		m_Pitch(0.0f), m_Yaw(0.0f), m_SpeedX(0.0f), m_SpeedY(0.0f), m_SpeedZ(0.0f), m_RotateSensitive(0.0f)
 	{
+		m_Pitch = asin(direction.y / glm::length(direction));
+		m_Yaw = asin(-direction.x / glm::length(glm::vec2(direction.x, direction.z)));
 		Recalculate();
-		KeyPressEvent e(-1, -1);
-		SetCursorMode(e);
 		EventManager::GetInstance().SubscribeKeyPress(std::bind(&View::SetCursorMode, this, std::placeholders::_1));
 	}
+
 	void View::Update()
 	{
+		glm::vec3 front = glm::vec3(-sin(m_Yaw), 0.0f, -cos(m_Yaw));
+		glm::vec3 right = glm::vec3(cos(m_Yaw), 0.0f, -sin(m_Yaw));
+
 		float deltaTime = Time::GetInstance().GetDeltaTime();
 
-		glm::vec3 moveDirection(-sin(m_Yaw), 0.0f, -cos(m_Yaw));
-		glm::vec3 moveRight(cos(m_Yaw), 0.0f, -sin(m_Yaw));
-		if (Window::GetInstance().GetKey(GLFW_KEY_W) == GLFW_PRESS)
+		if (Window::GetInstance().GetKey(GLFW_KEY_W))
 		{
-			m_Position += moveDirection * m_SpeedZ * deltaTime;
+			m_Position += m_SpeedX * deltaTime * front;
 		}
-		else if (Window::GetInstance().GetKey(GLFW_KEY_S) == GLFW_PRESS)
+		else if(Window::GetInstance().GetKey(GLFW_KEY_S))
 		{
-			m_Position -= moveDirection * m_SpeedZ * deltaTime;
+			m_Position -= m_SpeedX * deltaTime * front;
 		}
-		if (Window::GetInstance().GetKey(GLFW_KEY_D) == GLFW_PRESS)
+		if (Window::GetInstance().GetKey(GLFW_KEY_D))
 		{
-			m_Position += moveRight * m_SpeedX * deltaTime;
+			m_Position += m_SpeedX * deltaTime * right;
 		}
-		else if (Window::GetInstance().GetKey(GLFW_KEY_A) == GLFW_PRESS)
+		else if (Window::GetInstance().GetKey(GLFW_KEY_A))
 		{
-			m_Position -= moveRight * m_SpeedX * deltaTime;
+			m_Position -= m_SpeedX * deltaTime * right;
 		}
-		if (Window::GetInstance().GetKey(GLFW_KEY_SPACE) == GLFW_PRESS)
+		if (Window::GetInstance().GetKey(GLFW_KEY_SPACE))
 		{
-			m_Position.y += m_SpeedY * deltaTime;
+			m_Position.y += m_SpeedZ * deltaTime;
 		}
-		else if (Window::GetInstance().GetKey(GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+		else if (Window::GetInstance().GetKey(GLFW_KEY_LEFT_SHIFT))
 		{
-			m_Position.y -= m_SpeedY * deltaTime;
+			m_Position.y -= m_SpeedZ * deltaTime;
 		}
 
 		if (m_EnableRotate)
@@ -61,36 +63,29 @@ namespace Firefly
 			float deltaX = MousePos::GetInstance().GetDeltaX();
 			float deltaY = MousePos::GetInstance().GetDeltaY();
 
-			m_Yaw -= deltaX * deltaTime * m_RotateSensitive;
 			m_Pitch -= deltaY * deltaTime * m_RotateSensitive;
-			m_Pitch = m_Pitch <= PITCH_MAX ? m_Pitch : PITCH_MAX;
-			m_Pitch = m_Pitch >= -PITCH_MAX ? m_Pitch : -PITCH_MAX;
+			m_Yaw -= deltaX * deltaTime * m_RotateSensitive;
+			m_Pitch =
+				m_Pitch > PITCH_MAX ? PITCH_MAX :
+				m_Pitch < -PITCH_MAX ? -PITCH_MAX :
+				m_Pitch;
 		}
-
 		Recalculate();
 	}
-
+	
 	bool View::SetCursorMode(KeyPressEvent& e)
 	{
 		if (e.GetKey() == GLFW_KEY_ESCAPE)
 		{
 			m_EnableRotate = !m_EnableRotate;
 		}
-		if (m_EnableRotate)
-		{
-			glfwSetInputMode(Window::GetInstance().GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-		}
-		else
-		{
-			glfwSetInputMode(Window::GetInstance().GetWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-		}
 		return false;
 	}
-
+	
 	void View::Recalculate()
 	{
-		glm::vec3 right(cos(m_Yaw), 0.0f, -sin(m_Yaw));
-		m_Direction = glm::vec3(-sin(m_Yaw) * cos(m_Pitch), sin(m_Pitch), -cos(m_Pitch) * cos(m_Yaw));
-		m_View = glm::lookAt(m_Position, m_Position + m_Direction, glm::cross(right, m_Direction));
+		m_Direction = glm::vec3(-cos(m_Pitch) * sin(m_Yaw), sin(m_Pitch), -cos(m_Pitch) * cos(m_Yaw));
+		glm::vec3 up = glm::vec3(sin(m_Pitch) * sin(m_Yaw), cos(m_Pitch), sin(m_Pitch) * cos(m_Yaw));
+		m_View = glm::lookAt(m_Position, m_Position + m_Direction, up);
 	}
 }

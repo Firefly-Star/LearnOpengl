@@ -7,6 +7,7 @@
 #include "0.0_Extentions/Updater/Time.h"
 #include "0.0_Extentions/Updater/MousePos.h"
 #include "0.0_Extentions/Test/Benchmark.h"
+#include "0.0_Extentions/Test/FPS.h"
 #include "0.0_Extentions/Manager/SingletonManager.h"
 
 #include "1.3_Hello_Window/Window.h"
@@ -36,3 +37,5 @@
 #include "4.8_Instancing/BindManager.h"
 
 #include "4.9_MSAA/MultiSampleFramebuffer.h"
+
+#include "5.3_ShadowMapping/DepthFramebuffer.h"

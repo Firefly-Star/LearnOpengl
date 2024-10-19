@@ -37,6 +37,7 @@ namespace Firefly
 				}, m_VBO
 			}
 			});
+		m_VAO.UnBind();
 	}
 	
 	SpriteRenderer::~SpriteRenderer()

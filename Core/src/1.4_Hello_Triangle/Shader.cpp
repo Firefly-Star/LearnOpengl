@@ -24,6 +24,7 @@ namespace Firefly
 			}
 			else
 			{
+				throw std::runtime_error("Failed to compile a component of shader!");
 				return;
 			}
 		}
@@ -49,6 +50,7 @@ namespace Firefly
 			glDeleteProgram(m_RendererId);
 
 			delete[] infoLog;
+			throw std::runtime_error("Failed to attatch the shader!");
 			return;
 		}
 	}

@@ -18,6 +18,19 @@ void Subscribe##type(std::function<bool(type##Event&)> func)\
 {\
 	NAME(type).push_back(func);\
 }
+#define UNSUBSCRIBE(type)\
+void UnSubscribe##type(std::function<bool(type##Event&)> func)\
+{\
+    auto& subscribers = NAME(type);\
+    for (auto it = subscribers.begin(); it != subscribers.end(); ++it)\
+    {\
+        if (*it == func)\
+        {\
+            subscribers.erase(it);\
+            return;\
+        }\
+    }\
+}
 
 namespace Firefly
 {
@@ -33,7 +46,6 @@ namespace Firefly
 		SUBSCRIBE(MouseScroll);
 		SUBSCRIBE(WindowResize);
 		SUBSCRIBE(WindowClose);
-		
 	private:
 		DECLARE(KeyPress);
 		DECLARE(KeyRelease);

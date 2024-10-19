@@ -11,7 +11,7 @@ namespace Firefly
 	class View
 	{
 	public:
-		View(const glm::vec3& position = glm::vec3(0.0f, 0.0f, 0.0f), bool enableRotate = true, float pitch = 0.0f, float yaw = 0.0f, float pitchMax = 89.9f);
+		View(const glm::vec3& position = glm::vec3(0.0f, 0.0f, 0.0f), const glm::vec3& direction = glm::vec3(0.0f, 0.0f, -1.0f), bool enableRotate = true, float pitchMax = glm::radians(89.9f));
 		void SetSpeed(const std::array<float, 4>& speed = {1.0f, 1.0f, 1.0f, 1.0f})
 		{
 			m_SpeedX = speed[0]; m_SpeedY = speed[1]; m_SpeedZ = speed[2]; m_RotateSensitive = speed[3];
