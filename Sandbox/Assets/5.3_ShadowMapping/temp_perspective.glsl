@@ -12,6 +12,10 @@ out vec4 color;
 
 uniform sampler2D depthMap;
 
+float Linearlize(float depth, float near, float far) // from 0-1 to linear near-far
+{
+    return near * far / (far + depth * (near - far));
+}
 
 void main()
 {
@@ -21,10 +25,16 @@ void main()
     float closestDepth = texture(depthMap, lightSpacePos.xy).r;
     
     float currentDepth = lightSpacePos.z;
+    
+    float near = 0.1f;
+    float far = 100.0f;
 
-    float bias = 0.05;
+    closestDepth = Linearlize(closestDepth, near, far);
+    currentDepth = Linearlize(currentDepth, near, far);
+
+    float bias = 0.1;
     bool shadow;
-    if (currentDepth > 1.0f)
+    if (currentDepth > far)
     {
         shadow = false;
     }

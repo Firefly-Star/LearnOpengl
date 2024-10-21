@@ -85,7 +85,7 @@ namespace Firefly
 	void View::Recalculate()
 	{
 		m_Direction = glm::vec3(-cos(m_Pitch) * sin(m_Yaw), sin(m_Pitch), -cos(m_Pitch) * cos(m_Yaw));
-		glm::vec3 up = glm::vec3(sin(m_Pitch) * sin(m_Yaw), cos(m_Pitch), sin(m_Pitch) * cos(m_Yaw));
-		m_View = glm::lookAt(m_Position, m_Position + m_Direction, up);
+		m_Up = glm::vec3(sin(m_Pitch) * sin(m_Yaw), cos(m_Pitch), sin(m_Pitch) * cos(m_Yaw));
+		m_View = glm::lookAt(m_Position, m_Position + m_Direction, m_Up);
 	}
 }

@@ -10,4 +10,5 @@ namespace Firefly
 		static void Init();
 		static void Terminate();
 	};
+
 }

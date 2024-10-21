@@ -66,10 +66,10 @@ namespace Firefly
 	void Mesh::SetTexture(Shader& shader)
 	{
 		shader.Bind();
-		unsigned int diffuseNr = 1;
-		unsigned int specularNr = 1;
-		unsigned int normalNr = 1;
-		unsigned int heightNr = 1;
+		unsigned int diffuseNr = 0;
+		unsigned int specularNr = 0;
+		unsigned int normalNr = 0;
+		unsigned int heightNr = 0;
 		int n = static_cast<int>(m_Textures.size());
 		for (int i = 0; i < n; ++i)
 		{

@@ -17,12 +17,13 @@ namespace Firefly
 			m_SpeedX = speed[0]; m_SpeedY = speed[1]; m_SpeedZ = speed[2]; m_RotateSensitive = speed[3];
 		}
 		void Update();
-		const glm::mat4& GetView() { return m_View; }
-		const glm::vec3& GetPosition() { return m_Position; }
-		const glm::vec3& GetDirection() { return m_Direction; }
+		const glm::mat4& GetView() const { return m_View; }
+		const glm::vec3& GetPosition() const { return m_Position; }
+		const glm::vec3& GetDirection() const { return m_Direction; }
+		const glm::vec3& GetUp() const { return m_Up; }
 		bool SetCursorMode(KeyPressEvent& e);
 	private:
-		glm::vec3 m_Position, m_Direction;
+		glm::vec3 m_Position, m_Direction, m_Up;
 		glm::mat4 m_View;
 		float m_Pitch, m_Yaw;
 		const float PITCH_MAX;

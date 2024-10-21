@@ -47,6 +47,10 @@ namespace Firefly
 			{Shader::Type::VertexShader, ASSET("4.4_Cube_Texture/skybox_vertex.glsl")},
 			{Shader::Type::FragmentShader, ASSET("4.4_Cube_Texture/skybox_fragment.glsl")}
 			}));
+		m_Shaders.emplace("Axis1D", Shader({
+			{Shader::Type::VertexShader, ASSET("5.3_ShadowMapping/AxisRenderer/axis_vertex.glsl")},
+			{Shader::Type::FragmentShader, ASSET("5.3_ShadowMapping/AxisRenderer/axis_fragment.glsl")}
+			}));
 	}
 
 	ShaderLibrary::~ShaderLibrary()

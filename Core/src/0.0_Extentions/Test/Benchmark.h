@@ -2,12 +2,14 @@
 
 #include <chrono>
 #include <iostream>
+#include <string>
+#include <mutex>
 namespace Firefly
 {
 	class Benchmark
 	{
 	public:
-		Benchmark(const char* description = nullptr) : m_Description(description), m_Duration(0) {}
+		Benchmark(const std::string& description = "No decription provided") : m_Description(description), m_Duration(0) {}
 		void Reset() { m_Duration = 0; }
 		void Begin() { m_Begin = std::chrono::steady_clock::now(); }
 		void End()
@@ -18,11 +20,15 @@ namespace Firefly
 		unsigned int GetCount() { return m_Duration; }
 		void Print() 
 		{
+			s_Mutex.lock();
 			std::cout << m_Description << " takes " << m_Duration / 1000 << "." << m_Duration % 1000 << " milliseconds.\n";
+			s_Mutex.unlock();
 		}
 	private:
-		const char* m_Description;
+		std::string m_Description;
 		unsigned int m_Duration;
 		std::chrono::steady_clock::time_point m_Begin;
+
+		static std::mutex s_Mutex;
 	};
 }

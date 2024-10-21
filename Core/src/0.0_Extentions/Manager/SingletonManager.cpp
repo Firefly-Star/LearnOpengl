@@ -8,6 +8,7 @@
 #include "4.3_Framebuffer/SpriteRenderer.h"
 #include "4.4_Cube_Texture/SkyboxRenderer.h"
 #include "4.8_Instancing/BindManager.h"
+#include "5.3_ShadowMapping/AxisRenderer.h"
 
 namespace Firefly
 {
@@ -19,6 +20,7 @@ namespace Firefly
 		ShaderLibrary::Init();
 		SpriteRenderer::Init();
 		SkyboxRenderer::Init();
+		AxisRenderer::Init();
 		
 		Time::Init();
 		MousePos::Init();
@@ -31,6 +33,7 @@ namespace Firefly
 		MousePos::Terminate();
 		Time::Terminate();
 
+		AxisRenderer::Terminate();
 		SkyboxRenderer::Terminate();
 		SpriteRenderer::Terminate();
 		ShaderLibrary::Terminate();

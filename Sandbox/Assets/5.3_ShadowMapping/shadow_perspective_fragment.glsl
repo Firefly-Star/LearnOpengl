@@ -18,7 +18,6 @@ struct Model
 uniform Model model;
 
 uniform sampler2D depthMap;
-
 uniform vec3 viewPos;
 uniform vec3 lightDir;
 
@@ -46,8 +45,12 @@ uniform vec3 lightDir;
 //    return shadow;
 //}
 
+float Linearlize(float depth, float near, float far)
+{
+    return (near * far) / (far + depth * (near - far));
+}
 
-float CalShadow(vec3 norm, vec3 lightDir)
+float CalShadow()
 {
     vec3 lightSpacePos = fs_in.v_FragPosInLightClipSpace.xyz / fs_in.v_FragPosInLightClipSpace.w;
     lightSpacePos = lightSpacePos * 0.5 + 0.5;
@@ -55,8 +58,14 @@ float CalShadow(vec3 norm, vec3 lightDir)
     float currentDepth = lightSpacePos.z;
     vec2 pixelSize = vec2(1.0f) / textureSize(depthMap, 0);
     float shadow;
-    float bias = max(0.05 * (1 - dot(norm, lightDir)), 0.005f);
-    if (currentDepth > 1.0)
+    float bias = 0.1f;
+
+    float near = 0.1f;
+    float far = 100.0f;
+
+    currentDepth = Linearlize(currentDepth, near, far);
+
+    if (currentDepth > far)
     {
         return 1.0f;
     }
@@ -67,6 +76,7 @@ float CalShadow(vec3 norm, vec3 lightDir)
             for (int y = -1; y <= 1; ++y)
             {
                 float closestDepth = texture(depthMap, lightSpacePos.xy + vec2(x, y) * pixelSize).r;
+                closestDepth = Linearlize(closestDepth, near, far);
                 shadow += (currentDepth > closestDepth + bias) ? 0.0f : 1.0f;
             }
         }
@@ -77,13 +87,13 @@ float CalShadow(vec3 norm, vec3 lightDir)
 
 void main()
 {
+    float shadow = CalShadow();
+
     vec3 fragPos = fs_in.v_FragPos.xyz / fs_in.v_FragPos.w;
     vec3 lightDir2 = -normalize(lightDir);
     vec3 norm = normalize(fs_in.v_Normal);
     vec3 viewDir = normalize(viewPos - fragPos);
     vec3 halfWay = normalize(viewDir + lightDir2);
-
-    float shadow = CalShadow(norm, lightDir2);
 
     float ambientStrength = 0.1f;
     float diffuseStrength = 0.5f;

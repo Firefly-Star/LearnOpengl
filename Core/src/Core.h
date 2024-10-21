@@ -39,3 +39,6 @@
 #include "4.9_MSAA/MultiSampleFramebuffer.h"
 
 #include "5.3_ShadowMapping/DepthFramebuffer.h"
+#include "5.3_ShadowMapping/AxisRenderer.h"
+
+#include "5.4_Point_Shadow/DepthCubeFramebuffer.h"

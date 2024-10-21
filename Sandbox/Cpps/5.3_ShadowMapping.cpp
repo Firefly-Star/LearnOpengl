@@ -17,25 +17,37 @@ int main()
 		{Shader::Type::VertexShader, ASSET("5.3_ShadowMapping/depth_vertex.glsl")},
 		{Shader::Type::FragmentShader, ASSET("5.3_ShadowMapping/depth_fragment.glsl")}
 		});
+	//Shader displayShader({
+	//	{Shader::Type::VertexShader, ASSET("5.3_ShadowMapping/display_vertex.glsl")},
+	//	{Shader::Type::FragmentShader, ASSET("5.3_ShadowMapping/display_fragment.glsl")}
+	//	});
 	Shader displayShader({
 		{Shader::Type::VertexShader, ASSET("5.3_ShadowMapping/display_vertex.glsl")},
-		{Shader::Type::FragmentShader, ASSET("5.3_ShadowMapping/display_fragment.glsl")}
+		{Shader::Type::FragmentShader, ASSET("5.3_ShadowMapping/display_perspective_fragment.glsl")}
 		});
 	Shader originShader({
 		{Shader::Type::VertexShader, ASSET("5.3_ShadowMapping/origin_vertex.glsl")},
 		{Shader::Type::FragmentShader, ASSET("5.3_ShadowMapping/origin_fragment.glsl")}
 		});
+	//Shader shadowShader({
+	//	{Shader::Type::VertexShader, ASSET("5.3_ShadowMapping/shadow_vertex.glsl")},
+	//	{Shader::Type::FragmentShader, ASSET("5.3_ShadowMapping/shadow_fragment.glsl")}
+	//	});
 	Shader shadowShader({
 		{Shader::Type::VertexShader, ASSET("5.3_ShadowMapping/shadow_vertex.glsl")},
-		{Shader::Type::FragmentShader, ASSET("5.3_ShadowMapping/shadow_fragment.glsl")}
+		{Shader::Type::FragmentShader, ASSET("5.3_ShadowMapping/shadow_perspective_fragment.glsl")}
 		});
 	Shader basicShader({
 		{Shader::Type::VertexShader, ASSET("5.3_ShadowMapping/shadow_vertex.glsl")},
 		{Shader::Type::FragmentShader, ASSET("5.3_ShadowMapping/basic_fragment.glsl")}
 		});
+	//Shader testShader({
+	//	{Shader::Type::VertexShader, ASSET("5.3_ShadowMapping/shadow_vertex.glsl")},
+	//	{Shader::Type::FragmentShader, ASSET("5.3_ShadowMapping/temp.glsl")}
+	//	});
 	Shader testShader({
 		{Shader::Type::VertexShader, ASSET("5.3_ShadowMapping/shadow_vertex.glsl")},
-		{Shader::Type::FragmentShader, ASSET("5.3_ShadowMapping/temp.glsl")}
+		{Shader::Type::FragmentShader, ASSET("5.3_ShadowMapping/temp_perspective.glsl")}
 		});
 
 	float bottomSize = 40.0f;
@@ -132,12 +144,15 @@ int main()
 	bottomIBO.Bind();
 	bottomVAO.UnBind();
 
-	int shadowWidth = 500;
-	int shadowHeight = 500;
+	Model ourmodel(ASSET("3.2_Model/nanosuit/nanosuit.obj"));
+
+	int shadowWidth = 1000;
+	int shadowHeight = 1000;
 	DepthFramebuffer depthMapFBO(shadowWidth, shadowHeight);
 
-	auto lightProjection = Projection::Create<Projection::Type::Ortho>(std::array<float, 6>{ -10.0f, 10.0f, -10.0f, 10.0f, 0.0f, 20.0f });
-	View lightView(glm::vec3(5.0f, 5.0f, 5.0f), glm::vec3(-1.0f, -1.0f, -1.0f));
+	//auto lightProjection = Projection::Create<Projection::Type::Ortho>(std::array<float, 6>{ -10.0f, 10.0f, -10.0f, 10.0f, 0.0f, 20.0f });
+	auto lightProjection = Projection::Create<Projection::Type::Perspective>(std::array<float, 4>{glm::radians(45.0f), 1.0f, 0.1f, 100.0f});
+	View lightView(glm::vec3(20.0f, 20.0f, 20.0f), glm::vec3(-1.0f, -1.0f, -1.0f));
 	auto normalProjection = Projection::Create<Projection::Type::Perspective>(std::array<float, 4>{glm::radians(45.0f), 1.0f, 0.1f, 100.0f});
 	lightView.SetSpeed();
 
@@ -154,6 +169,9 @@ int main()
 
 	glm::mat4 cubeModelMat = glm::mat4(1.0f);
 	glm::mat4 bottomModelMat = glm::scale(glm::mat4(1.0f), glm::vec3(bottomSize, 1.0f, bottomSize));
+	glm::mat4 modelModelMat = 
+		glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, -2.0f)) * 
+		glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.2f, 0.2f));
 
 	FrameRatio fps;
 
@@ -174,6 +192,9 @@ int main()
 		depthShader.SetUniform("modelMat", cubeModelMat);
 		cubeVAO.Bind();
 		glDrawElements(GL_TRIANGLES, cubeIBO.GetCount(), GL_UNSIGNED_INT, nullptr);
+
+		depthShader.SetUniform("modelMat", modelModelMat);
+		ourmodel.Render(depthShader);
 
 		depthShader.SetUniform("modelMat", bottomModelMat);
 		bottomVAO.Bind();
@@ -220,6 +241,10 @@ int main()
 		bottomVAO.Bind();
 		glDrawElements(GL_TRIANGLES, bottomIBO.GetCount(), GL_UNSIGNED_INT, nullptr);
 
+		testShader.SetUniform("modelMat", modelModelMat);
+		testShader.SetUniform("lightpvmMat", lightProjection->GetProjection()* lightView.GetView()* modelModelMat);
+		ourmodel.Render(testShader);
+
 		// Display the normal view
 		glViewport(0, 800, 800, 800);
 		basicShader.Bind();
@@ -228,7 +253,7 @@ int main()
 		basicShader.SetUniform("modelMat", cubeModelMat);
 		basicShader.SetUniform("normalMat", glm::mat4(1.0f));
 		basicShader.SetUniform("lightpvmMat", normalProjection->GetProjection()* lightView.GetView());
-		basicShader.SetUniform("tex", 3);
+		basicShader.SetUniform("model.texture_diffuse0", 3);
 		cubeVAO.Bind();
 		glDrawElements(GL_TRIANGLES, cubeIBO.GetCount(), GL_UNSIGNED_INT, nullptr);
 
@@ -236,12 +261,16 @@ int main()
 		bottomVAO.Bind();
 		glDrawElements(GL_TRIANGLES, bottomIBO.GetCount(), GL_UNSIGNED_INT, nullptr);
 
+		basicShader.SetUniform("modelMat", modelModelMat);
+		ourmodel.Render(basicShader);
+
 		// Display the normal view with simple shadow
 		glViewport(800, 800, 800, 800);
 		shadowShader.Bind();
+		woodTexture->Bind(3);
 		depthMapFBO.BindTexture(2);
 		shadowShader.SetUniform("depthMap", 2);
-		shadowShader.SetUniform("tex", 3);
+		shadowShader.SetUniform("model.texture_diffuse0", 3);
 		shadowShader.SetUniform("pvMat", normalProjection->GetProjection() * normalView.GetView());
 		shadowShader.SetUniform("modelMat", cubeModelMat);
 		shadowShader.SetUniform("normalMat", glm::mat3(1.0f));
@@ -256,6 +285,12 @@ int main()
 		bottomVAO.Bind();
 		glDrawElements(GL_TRIANGLES, bottomIBO.GetCount(), GL_UNSIGNED_INT, nullptr);
 
+		shadowShader.SetUniform("modelMat", modelModelMat);
+		shadowShader.SetUniform("lightpvmMat", lightProjection->GetProjection()* lightView.GetView()* modelModelMat);
+		ourmodel.Render(shadowShader);
+
+		glViewport(0, 0, 1600, 1600);
+		AxisRenderer::GetInstance().Render(normalView, 1000.0f, 1000.0f, 200.0f);
 		});
 	SingletonManager::Terminate();
 }
