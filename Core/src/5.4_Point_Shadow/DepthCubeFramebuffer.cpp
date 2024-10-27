@@ -1,7 +1,10 @@
 #include "DepthCubeFramebuffer.h"
 
 #include <utility>
+#include <stdexcept>
+#include <iostream>
 #include <glad/glad.h>
+#include "0.0_Extentions/Test/GetError.h"
 namespace Firefly
 {
 	DepthCubeFramebuffer::DepthCubeFramebuffer(unsigned int size)
@@ -14,17 +17,27 @@ namespace Firefly
 		{
 			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, size, size, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
 		}
-
-		glTextureParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTextureParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTextureParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTextureParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_DepthCubeMap, 0);
 		glDrawBuffer(GL_NONE);
 		glReadBuffer(GL_NONE);
 
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		{
+			std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			glDeleteTextures(1, &m_DepthCubeMap);
+			glDeleteFramebuffers(1, &m_RendererId);
+			throw std::runtime_error("Failed to create framebuffer!\n");
+		}
+
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 	}
 
 	DepthCubeFramebuffer::~DepthCubeFramebuffer()

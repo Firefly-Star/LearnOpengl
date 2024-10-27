@@ -1,5 +1,5 @@
 #include "Entrypoint.h"
-#if ACTIVE_LESSON_MAJOR == 1 && ACTIVE_LESSON_MINOR == 7 && TEST == 0
+#if CHECK_ACTIVE(1, 7, 0)
 
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>

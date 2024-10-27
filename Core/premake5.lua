@@ -3,6 +3,7 @@ project "Core"
     language "C++"
     cppdialect "C++20"
     systemversion "latest"
+    staticruntime "off"
     toolset "v143"
 
     targetdir (path.join(topfold, "bin", outputfold, "%{prj.name}"))

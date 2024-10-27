@@ -16,7 +16,7 @@ namespace Firefly
 		enum class Type
 		{
 			None = 0,
-			VertexShader, FragmentShader, GeomotryShader
+			VertexShader, FragmentShader, GeometryShader
 		};
 		struct File
 		{

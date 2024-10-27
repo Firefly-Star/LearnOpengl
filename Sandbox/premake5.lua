@@ -3,6 +3,7 @@ project "Sandbox"
     language "C++"
     cppdialect "C++20"
     toolset "v143"
+    staticruntime "off"
     systemversion "latest"
 
     targetdir (path.join(topfold, "bin", outputfold, "%{prj.name}"))
@@ -18,14 +19,26 @@ project "Sandbox"
     {
         "",
         "../Core/src",
+        "../Tests/src",
         "../Vendor/glfw/include",
         "../Vendor/glad/include",
         "../Vendor/glm",
+        "../Vendor/googleBenchmark"
     }
 
     links
     {
         "Core",
+        "TestFrame",
+    }
+
+    defines
+    {
+        -- benchmark
+        "HAVE_STD_REGEX",
+        "HAVE_STEADY_CLOCK",
+        "TEST_BENCHMARK_LIBRARY_HAS_NO_ASSERTIONS",
+        "BENCHMARK_STATIC_DEFINE"
     }
 
     filter "configurations:Debug"

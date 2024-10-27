@@ -1,5 +1,5 @@
 #include "Entrypoint.h"
-#if ACTIVE_LESSON_MAJOR == 2 && ACTIVE_LESSON_MINOR == 1 && TEST == 0
+#if CHECK_ACTIVE(2, 1, 0)
 
 #include "0.0_Extentions/Updater/Updater.h"
 #include "0.0_Extentions/IOSystem/EventSystem/EventManager.h"

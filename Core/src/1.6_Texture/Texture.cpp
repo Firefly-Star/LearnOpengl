@@ -42,7 +42,18 @@ namespace Firefly
 
 	Texture2D::Texture2D(unsigned char* data, int width, int height)
 	{
+		glGenTextures(1, &m_RendererId);
+		glBindTexture(GL_TEXTURE_2D, m_RendererId);
 
+		glTextureParameteri(m_RendererId, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTextureParameteri(m_RendererId, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTextureParameteri(m_RendererId, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTextureParameteri(m_RendererId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
 	Texture2D::~Texture2D()

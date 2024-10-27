@@ -10,7 +10,7 @@ uniform float farPlane;
 
 void main()
 {
-	vec3 fragPos = fs_in.v_FragPos.xyz / fs_in.v_FragPos.w; 
-	float depth = length(lightPos, fragPos) / farPlane;
+	vec3 fragPos = (fs_in.v_FragPos.xyz) / (fs_in.v_FragPos.w); 
+	float depth = length(lightPos - fragPos) / farPlane;
 	gl_FragDepth = depth;
 }

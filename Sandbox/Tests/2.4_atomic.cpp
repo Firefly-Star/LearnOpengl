@@ -1,28 +1,24 @@
 #include "Entrypoint.h"
 #if CHECK_ACTIVE(2, 4, 1)
 
-#include <iostream>
-#include <atomic>
-#include <thread>
+#include "Benchmark/BenchmarkHelper.h"
 
-
-void func(std::atomic<int>& counter)
+void t1()
 {
-	for (int i = 0; i < 1000; ++i)
-	{
-		++counter;
-	}
+	int x = 0;
 }
 
-int main()
+void t2(int x)
 {
-	std::atomic<int> counter(0);
-	std::thread t1(func, std::ref(counter));
-	std::thread t2(func, std::ref(counter));
+	++x;
+}
 
-	std::cout << counter.load() << "\n";
-	t1.join();
-	t2.join();
+
+int main(int argc, char** argv)
+{
+	REGISTER(t1);
+	REGISTER(t2, 10);
+	Firefly::BenchmarkHelper::RunBenchmark(argc, argv);
 }
 
 #endif

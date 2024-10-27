@@ -1,7 +1,7 @@
 project "GLFW"
 	kind "StaticLib"
 	language "C"
-	staticruntime "on"
+	staticruntime "off"
 	warnings "off"
 
 	targetdir (path.join(topfold, "bin", outputfold, "%{prj.name}"))

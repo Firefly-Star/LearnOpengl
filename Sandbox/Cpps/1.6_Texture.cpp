@@ -1,5 +1,5 @@
 #include "Entrypoint.h"
-#if ACTIVE_LESSON_MAJOR == 1 && ACTIVE_LESSON_MINOR == 6 && TEST == 0
+#if CHECK_ACTIVE(1, 6, 0)
 
 #include "1.3_Hello_Window/Window.h"
 #include "1.4_Hello_Triangle/IndexBuffer.h"

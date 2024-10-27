@@ -28,6 +28,7 @@ namespace Firefly
 
 	Window::~Window()
 	{
+		glfwDestroyWindow(m_Window);
 		glfwTerminate();
 	}
 

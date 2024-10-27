@@ -138,7 +138,7 @@ namespace Firefly
 		{
 		case Type::VertexShader: return GL_VERTEX_SHADER;
 		case Type::FragmentShader: return GL_FRAGMENT_SHADER;
-		case Type::GeomotryShader: return GL_GEOMETRY_SHADER;
+		case Type::GeometryShader: return GL_GEOMETRY_SHADER;
 		}
 		return 0;
 	}

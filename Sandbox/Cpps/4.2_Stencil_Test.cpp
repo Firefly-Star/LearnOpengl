@@ -1,5 +1,5 @@
 #include "Entrypoint.h"
-#if ACTIVE_LESSON_MAJOR == 4 && ACTIVE_LESSON_MINOR == 2 && TEST == 0
+#if CHECK_ACTIVE(4, 2, 0)
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>

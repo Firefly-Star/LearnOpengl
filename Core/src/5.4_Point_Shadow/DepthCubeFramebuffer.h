@@ -2,6 +2,7 @@
 
 #include "Macros.h"
 #include "4.3_Framebuffer/Framebuffer.h"
+#include <glm.hpp>
 
 namespace Firefly
 {

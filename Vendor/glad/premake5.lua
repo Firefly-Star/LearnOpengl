@@ -1,6 +1,7 @@
 project "Glad"
     kind "StaticLib"
     language "C"
+    staticruntime "off"
 
     targetdir (path.join(topfold, "bin", outputfold, "%{prj.name}"))
     objdir (path.join(topfold, "bin-obj", outputfold, "%{prj.name}"))
