@@ -2,7 +2,7 @@
 
 #include <memory>
 #include <stdexcept>
-
+#include <queue>
 namespace Firefly
 {
 	template<typename T>
@@ -119,4 +119,5 @@ namespace Firefly
 		LinkNode<T>* m_Front;
 		LinkNode<T>* m_Back;
 	};
+
 }

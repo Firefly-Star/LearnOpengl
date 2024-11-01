@@ -213,16 +213,6 @@ int main()
 		//Display the test view
 		glViewport(600, 0, 600, 600);
 		testShader.Bind();
-		/*
-		uniform mat4 pvMat;
-		uniform mat4 modelMat;
-		uniform mat3 normalMat;
-		uniform Model model;
-		uniform vec3 lightPos;
-		uniform samplerCube depthMap;
-		uniform vec3 viewPos;
-		uniform float farPlane;
-		*/
 		cubeDepthFBO.BindTexture(20);
 		testShader.SetUniform("pvMat", ourProjection.GetProjection()* ourView.GetView());
 		testShader.SetUniform("lightPos", glm::vec3(0.0f, 0.0f, 0.0f));

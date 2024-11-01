@@ -12,9 +12,9 @@ void BM_MyAllocate(benchmark::State& state, size_t size)
 {
 	for (auto _ : state)
 	{
-		void* ptr = Firefly::Allocator<>::AllocateAligned<32>(size);
+		void* ptr = Firefly::_Allocator<>::AllocateAligned<32>(size);
 		state.PauseTiming();
-		Firefly::Allocator<>::DeAllocate<32>(ptr, size);
+		Firefly::_Allocator<>::DeAllocate<32>(ptr, size);
 		state.ResumeTiming();
 	}
 }
@@ -61,7 +61,7 @@ int main()
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	REGISTE(BM_MyAllocate, 32000);
 	REGISTE(BM_STLAllocate, 32000);
-	//Firefly::BenchmarkHelper::RunBenchmark();
+	Firefly::BenchmarkHelper::RunBenchmark();
 	bar();
 	
 }
