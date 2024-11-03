@@ -9,7 +9,7 @@ namespace Firefly
 	struct ForwardIteratorTag : InputIteratorTag{};
 	struct BidirectionalIteratorTag : ForwardIteratorTag {};
 	struct RandomAccessIteratorTag : BidirectionalIteratorTag {};
-
+#if 0
 	// BackInsertIterator
 	template<typename Container>
 	concept Has_Push_Back = requires(Container container, typename Container::value_type val) { container.push_back(val); };
@@ -163,4 +163,5 @@ namespace Firefly
 	{
 		return InsertIterator(container, val);
 	}
+#endif
 }

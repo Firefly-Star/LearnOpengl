@@ -27,7 +27,7 @@ namespace Firefly
         }
 
         template<typename... Args>
-        T* Allocate(Args&&... args)
+        size_t Allocate(Args&&... args)
         {
             if (std::get<size_t>(m_Buffer[0]) == m_Capacity)
             {
@@ -70,11 +70,22 @@ namespace Firefly
                 m_Capacity = newCapacity;
             }
 
-            auto t = m_Buffer + std::get<size_t>(m_Buffer[0]);
+            size_t index = std::get<size_t>(m_Buffer[0]);
+            auto t = m_Buffer + index;
             size_t next = std::get<size_t>(*t);
             t->template emplace<T>(std::forward<Args>(args)...);
             std::get<size_t>(m_Buffer[0]) = next;
-            return std::get_if<T>(t);
+            return index;
+        }
+
+        T& operator[](size_t index)
+        {
+            auto ptr = std::get_if<T>(m_Buffer + index);
+            if (ptr == nullptr)
+            {
+                throw std::runtime_error("Visiting unaccessible memory!");
+            }
+            return *ptr;
         }
 
         void DeAllocate(T* ptr)

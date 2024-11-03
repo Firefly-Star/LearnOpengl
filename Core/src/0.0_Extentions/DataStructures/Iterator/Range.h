@@ -2,6 +2,7 @@
 #include <type_traits>
 namespace Firefly
 {
+#if 0
 	namespace Range
 	{
 		namespace Cpo
@@ -144,4 +145,5 @@ namespace Firefly
 			using iterator_t = decltype(begin(std::declval<T&>()));
 		}
 	}
+#endif
 }
