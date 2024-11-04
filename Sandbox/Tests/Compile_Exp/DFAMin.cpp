@@ -11,89 +11,120 @@ namespace Firefly
 
     StateGraph DFAMin::Minimize(StateGraph dfa)
 	{
-
         std::vector<state_set> partitions;
-        state_set acceptingStates, nonAcceptingStates;
+        state_set accepted;
+        state_set unaccepted;
 
-        for (auto it = dfa.dfsbegin(); it != dfa.dfsend(); ++it) 
+        for (auto it = dfa.dfsbegin(); it != dfa.dfsend(); ++it)
         {
-            if ((*it)->isAccepted)
+            StateNode* node = *it;
+            if (node->isAccepted)
             {
-                acceptingStates.insert(*it);
+                accepted.insert(node);
             }
-            else 
+            else
             {
-                nonAcceptingStates.insert(*it);
+                unaccepted.insert(node);
             }
         }
-
-        if (!acceptingStates.empty())
+        if (!accepted.empty())
         {
-            partitions.push_back(acceptingStates);
+            partitions.push_back(accepted);
         }
-        if (!nonAcceptingStates.empty())
-        {
-            partitions.push_back(nonAcceptingStates);
-        }
+        partitions.push_back(unaccepted);
 
         bool changed = true;
-        while (changed) 
+        while (changed)
         {
             changed = false;
             std::vector<state_set> newPartitions;
-
-            for (auto& group : partitions) 
+            for (state_set& group : partitions)
             {
-                std::unordered_map<state_set, state_set> splitterMap;
-                std::vector<std::pair<state_set, state_set>> splliterMap;
-                for (StateNode* state : group) 
+                // subdivision
+                std::unordered_map<std::string, state_set> transitionMap;
+                for (StateNode* state : group)
                 {
-                    state_set splitKey;
+                    std::string key;
+
                     for (char c : alphabet)
                     {
-                        StateNode* next = *(state->stateMap[c].begin());
-                        for (auto& partition : partitions) 
+                        if (state->stateMap.count(c) != 0)
                         {
-                            if (partition.count(next)) 
+                            StateNode* nextState = *(state->stateMap[c].begin());
+                            for (size_t i = 0; i < partitions.size(); ++i)
                             {
-                                splitKey.insert(*partition.begin());
-                                break;
+                                if (partitions[i].count(nextState) > 0)
+                                {
+                                    key += std::to_string(i) + ",";
+                                    break;
+                                }
                             }
                         }
+                        else
+                        {
+                            key += "-1,";
+                        }
                     }
-                    splitterMap[splitKey].insert(state);
+
+                    transitionMap[key].insert(state);
                 }
 
-                for (auto& entry : splitterMap) 
+                for (const auto& pair : transitionMap)
                 {
-                    newPartitions.push_back(entry.second);
-                    if (entry.second.size() < group.size()) {
+                    newPartitions.push_back(pair.second);
+                    if (pair.second.size() != group.size())
+                    {
                         changed = true;
                     }
                 }
             }
+
             partitions = std::move(newPartitions);
         }
 
-        std::unordered_map<StateNode*, StateNode*> stateMap;
-        for (auto& partition : partitions) 
+
+        // 构造最小化 DFA
+        // 对partitions中的每个分组，对应地创建一个StateNode*，分组中包含了接收结点的就是新的接收结点，包含了起始结点的就是起始结点
+        StateNode* root;
+        int n = partitions.size();
+        std::vector<StateNode*> minimizedDFA(n);
+        for (int i = 0; i < n; ++i)
         {
-            StateNode* rep = new StateNode();
-            rep->isAccepted = (*partition.begin())->isAccepted;
-            for (StateNode* state : partition) 
+            minimizedDFA[i] = m_Allocator.Allocate();
+        }
+
+        for (int i = 0; i < n; ++i)
+        {
+            for (StateNode* state : partitions[i])
             {
-                stateMap[state] = rep;
+                if (state == dfa.GetRoot())
+                {
+                    root = minimizedDFA[i];
+                }
+                if (state->isAccepted)
+                {
+                    minimizedDFA[i]->isAccepted = true;
+                }
+            }
+            
+            StateNode* oneNode = *(partitions[i].begin());
+            for (char c : alphabet)
+            {
+                if (oneNode->stateMap.count(c) != 0)
+                {
+                    StateNode* nextNode = *(oneNode->stateMap[c].begin());
+                    for (int j = 0; j < n; ++j)
+                    {
+                        if (partitions[j].count(nextNode) != 0)
+                        {
+                            minimizedDFA[i]->stateMap[c].insert(minimizedDFA[j]);
+                            break;
+                        }
+                    }
+                }
             }
         }
 
-        for (auto& [oldState, newState] : stateMap)
-        {
-            for (auto& [c, target] : oldState->transitions) 
-            {
-                newState->transitions[c] = stateMap[target];
-            }
-        }
-
-        return StateGraph(stateMap[dfa.getRoot()]);
+        return StateGraph(root);
 	}
 }
