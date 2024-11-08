@@ -17,7 +17,7 @@ namespace Firefly
 		StateNode* findOrInsertStateSet(std::vector<std::pair<state_set, StateNode*>>& stateSets,
 			const state_set& targetSet, bool isAccepted);
 
-		StateGraph Transform(StateGraph nfa);
+		[[nodiscard]] StateGraph Transform(StateGraph nfa);
 	private:
 		temp<StateNode> m_Allocator;
 	};

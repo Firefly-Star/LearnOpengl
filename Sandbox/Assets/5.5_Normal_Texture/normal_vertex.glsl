@@ -23,5 +23,5 @@ void main()
 	gl_Position = pvMat * modelMat * vec4(a_Position, 1.0f);
 	vs_out.v_FragPos = modelMat * vec4(a_Position, 1.0f);
 	vs_out.v_TexCoord = a_TexCoord;
-	vs_out.v_TBN = transpose(normalMat * mat3(a_Tangent, a_Bitangent, a_Normal));
+	vs_out.v_TBN = inverse(normalMat * mat3(a_Tangent, a_Bitangent, a_Normal));
 }

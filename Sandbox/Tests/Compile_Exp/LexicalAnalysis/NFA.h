@@ -7,7 +7,7 @@ namespace Firefly
 	class temp
 	{
 	public:
-		T* Allocate()
+		[[nodiscard]] T* Allocate()
 		{
 			T* node =  new T();
 			m_Pool.insert(node);
@@ -44,7 +44,7 @@ namespace Firefly
 		NFABuilder() = default;
 		~NFABuilder() = default;
 
-		StateGraph Build(std::string const& regex);
+		[[nodiscard]] StateGraph Build(std::string const& regex);
 	private:
 		int OperatorPriority(char c);
 

@@ -13,7 +13,7 @@ namespace Firefly
 		DFAMin() = default;
 		~DFAMin() = default;
 
-		StateGraph Minimize(StateGraph dfa);
+		[[nodiscard]] StateGraph Minimize(StateGraph dfa);
 
 	private:
 		temp<StateNode> m_Allocator;
