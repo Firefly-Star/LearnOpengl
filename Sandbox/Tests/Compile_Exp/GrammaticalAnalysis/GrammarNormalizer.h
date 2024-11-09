@@ -8,6 +8,7 @@ namespace Firefly
 	public:
 		using left_type = Grammar::left_type;
 		using right_type = Grammar::right_type;
+		using member_type = Grammar::member_type;
 	public:
 		explicit GrammarNormalizer(Grammar& gramma) : m_Gramma(gramma) {}
 		~GrammarNormalizer() = default;

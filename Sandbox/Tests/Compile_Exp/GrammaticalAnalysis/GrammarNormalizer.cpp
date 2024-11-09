@@ -6,7 +6,11 @@ namespace Firefly
 	void GrammarNormalizer::Normalize()
 	{
 		EliminateLeftRecursion();
+		m_Gramma.PrintProductions();
+		std::cout << "\n";
 		ExtractLeftFactoring();
+		m_Gramma.PrintProductions();
+		std::cout << "\n";
 	}
 
 	void GrammarNormalizer::EliminateLeftRecursion()
@@ -121,88 +125,65 @@ namespace Firefly
 		{
 			changed = false;
 
-			for (auto& [left, rights] : m_Gramma.m_Productions)
+			std::unordered_map<left_type, std::vector<std::pair<left_type, right_type>>> newProductionsToAdd;
+			std::unordered_map<left_type, std::vector<size_t>> indicesToRemove;
+
+			for (const auto& [left, rights] : m_Gramma.m_Productions)
 			{
-				std::unordered_map<char, std::vector<size_t>> charMap;
-				std::unordered_map<left_type, std::vector<size_t>> stringMap;
-				for (size_t i = 0;i < rights.size(); ++i)
+				std::unordered_map<member_type, std::vector<size_t>> record;
+				for (size_t i = 0; i < rights.size(); ++i)
 				{
-					if (rights[i].size() > 0)
+					if (!rights[i].empty())
 					{
-						std::visit([&](auto& value) {
-							using value_type = std::remove_reference_t<decltype(value)>;
-							if constexpr (std::is_same_v<value_type, char>)
-							{
-								charMap[value].push_back(i);
-							}
-							else if constexpr (std::is_same_v<value_type, left_type>)
-							{
-								stringMap[value].push_back(i);
-							}
-							else
-							{
-								throw std::runtime_error("aaa");
-							}
-							}, rights[i][0]);
+						record[rights[i][0]].push_back(i);
 					}
 				}
-				std::unordered_map<left_type, std::vector<right_type>> pairToPush;
-				for (auto& [c, v] : charMap)
+
+				for (const auto& [first, indices] : record)
 				{
-					if (v.size() > 1)
+					if (indices.size() > 1)
 					{
 						changed = true;
-						// 产生新的表达式
 						left_type newSymbol = GenerateNewSymbol(left);
-						for (size_t index : v)
+						std::vector<right_type> newProductions;
+
+						for (size_t index : indices)
 						{
-							right_type newRight(rights[index].begin() + 1, rights[index].end());
-							pairToPush[newSymbol] .push_back(newRight);
+							newProductions.emplace_back(rights[index].begin() + 1, rights[index].end());
 						}
 
-						// 移出老的表达式
-						std::sort(v.begin(), v.end(), std::greater<size_t>());
-						for (size_t index : v)
+						for (const auto& newProduction : newProductions)
 						{
-							rights.erase(rights.begin() + index);
-						}
-						// 把新的加进去
-						pairToPush[left].push_back({c, newSymbol});
-					}
-				}
-				for (auto& [c, v] : stringMap)
-				{
-					if (v.size() > 1)
-					{
-						changed = true;
-						// 产生新的表达式
-						left_type newSymbol = GenerateNewSymbol(left);
-						for (size_t index : v)
-						{
-							right_type newRight(rights[index].begin() + 1, rights[index].end());
-							pairToPush[newSymbol].push_back(newRight);
+							newProductionsToAdd[newSymbol].emplace_back(newSymbol, newProduction);
 						}
 
-						// 移出老的表达式
-						std::sort(v.begin(), v.end(), std::greater<size_t>());
-						for (size_t index : v)
-						{
-							rights.erase(rights.begin() + index);
-						}
-						// 把新的加进去
-						pairToPush[left].push_back({c, newSymbol});
+						indicesToRemove[left].insert(indicesToRemove[left].end(), indices.begin(), indices.end());
+
+						newProductionsToAdd[left].emplace_back(left, right_type{ first, newSymbol });
 					}
 				}
-				for (auto& pair : pairToPush)
+			}
+
+			for (const auto& [symbol, additions] : newProductionsToAdd)
+			{
+				for (const auto& [_, production] : additions)
 				{
-					for (right_type& _right : pair.second)
-					{
-						m_Gramma.AddProduction(pair.first, _right);
-					}
+					m_Gramma.m_Productions[symbol].push_back(production);
+				}
+			}
+
+			for (const auto& [symbol, indices] : indicesToRemove)
+			{
+				std::vector<size_t> sortedIndices = indices;
+				std::sort(sortedIndices.begin(), sortedIndices.end(), std::greater<size_t>());
+				for (size_t index : sortedIndices)
+				{
+					m_Gramma.m_Productions[symbol].erase(m_Gramma.m_Productions[symbol].begin() + index);
 				}
 			}
 		}
 	}
+
 	GrammarNormalizer::left_type GrammarNormalizer::GenerateNewSymbol(left_type const& origin)
 	{
 		int i = 1;
