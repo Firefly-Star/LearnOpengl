@@ -7,7 +7,6 @@
 #include <queue>
 #include <fstream>
 
-#include "0.0_Extentions/DataStructures/Allocator/PoolAllocator.h"
 #include "0.0_Extentions/DataStructures/Iterator/BaseIterator.h"
 #include "0.0_Extentions/DataStructures/Algorithm/Graph.h"
 
@@ -174,7 +173,6 @@ namespace Firefly
 		using value_type = StateNode*;
 		using dfs_iterator_type = DFSIterator;
 		using bfs_iterator_type = BFSIterator;
-		using allocator_type = PoolAllocator<StateNode>;
 
 		StateGraph(value_type root) : m_Root(root){}
 

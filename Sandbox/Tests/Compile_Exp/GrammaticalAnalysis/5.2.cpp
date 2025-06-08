@@ -19,6 +19,7 @@ int main()
 	p.AddProduction("A", { });
 	p.AddProduction("B", { 'b' });
 	p.PrintProductions();
+	std::cout << "\n";
 #if 1
 	GrammarAnalyzer analyzer(p);
 

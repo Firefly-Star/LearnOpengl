@@ -3,108 +3,205 @@
 #include <type_traits>
 #include <iostream>
 #include <variant>
+#include "Macros.h"
 
 namespace Firefly
 {
-    template<typename T>
-    class PoolAllocator
-    {
-    private:
-        using storage_type = std::variant<T, size_t>;
-    public:
-        PoolAllocator(size_t size = 4)
-            :m_Capacity(size), m_Buffer(new storage_type[size])
-        {
-            for (size_t i = 0; i < size; ++i)
-            {
-                m_Buffer[i].emplace<size_t>(i + 1);
-            }
-        }
+	template<typename T>
+	class PoolAllocator;
 
-        ~PoolAllocator()
-        {
-            delete[] m_Buffer;
-        }
+	template<typename T>
+	class PoolAllocatorHandle
+	{
+	public:
+		PoolAllocatorHandle(size_t index = 0, const PoolAllocator<T>* allocator = nullptr) : m_Index(index), m_Allocator(allocator) {}
+		~PoolAllocatorHandle() = default;
 
-        template<typename... Args>
-        size_t Allocate(Args&&... args)
-        {
-            if (std::get<size_t>(m_Buffer[0]) == m_Capacity)
-            {
-                size_t newCapacity;
-                storage_type* newBuffer;
-                try
-                {
-                    newCapacity = 2 * m_Capacity;
-                    newBuffer = new storage_type[newCapacity];
-                }
-                catch (std::bad_alloc e)
-                {
-                    std::cout << e.what() << "\n";
-                    return nullptr;
-                }
-                for (size_t i = 0; i < m_Capacity; ++i)
-                {
-                    std::visit([newBuffer, i](auto& value) {
-                        using value_type = std::remove_reference_t<decltype(value)>;
-                        if constexpr(std::is_same_v<value_type, size_t>)
-                        {
-                            newBuffer[i].emplace<size_t>(value);
-                        }
-                        else if constexpr(std::is_same_v<value_type, T>)
-                        {
-                            newBuffer[i].emplace<T>(std::move(value));
-                        }
-                        else
-                        {
-                            std::cout << "no matching type.\n";
-                        }
-                        }, m_Buffer[i]);
-                }
-                delete[] m_Buffer;
-                m_Buffer = newBuffer;
-                for (size_t i = m_Capacity; i < 2 * m_Capacity; ++i)
-                {
-                    m_Buffer[i].emplace<size_t>(i + 1);
-                }
-                m_Capacity = newCapacity;
-            }
+		size_t GetIndex() const { return m_Index; }
 
-            size_t index = std::get<size_t>(m_Buffer[0]);
-            auto t = m_Buffer + index;
-            size_t next = std::get<size_t>(*t);
-            t->template emplace<T>(std::forward<Args>(args)...);
-            std::get<size_t>(m_Buffer[0]) = next;
-            return index;
-        }
+		T* Get() const;
+		void Release();
+		T& operator*() const;
+		T* operator->() const;
+		bool operator==(PoolAllocatorHandle const& other) const;
+		bool operator!=(PoolAllocatorHandle const& other) const;
+	private:
+		size_t m_Index;
+		const PoolAllocator<T>* m_Allocator;
+	};
 
-        T& operator[](size_t index)
-        {
-            auto ptr = std::get_if<T>(m_Buffer + index);
-            if (ptr == nullptr)
-            {
-                throw std::runtime_error("Visiting unaccessible memory!");
-            }
-            return *ptr;
-        }
+	template<typename T>
+	class PoolAllocator
+	{
+		MOVE_ONLY(PoolAllocator);
+	public:
+		using unit_type = std::variant<T, size_t>;
+		using pointer_type = PoolAllocatorHandle<T>;
+	public:
+		PoolAllocator(size_t capability = 8);
+		~PoolAllocator();
+	public:
+		template<typename... Args>
+		[[nodiscard]]pointer_type Allocate(Args&&... args);
 
-        void DeAllocate(T* ptr)
-        {
-            size_t index = (reinterpret_cast<uintptr_t>(ptr) - reinterpret_cast<uintptr_t>(m_Buffer)) / sizeof(storage_type);
-            if (index < m_Capacity)
-            {
-                m_Buffer[index].emplace<size_t>(std::get<size_t>(m_Buffer[0]));
-                std::get<size_t>(m_Buffer[0]) = index;
-            }
-            else
-            {
-                throw std::runtime_error("Failed to deallocate a pointer beyond the management of pool allocator!");
-            }
-        }
+		void Release(pointer_type const& ptr) const;
 
-    private:
-        storage_type* m_Buffer;
+		T* GetRawPtr(size_t index) const;
+	private:
+		std::variant<T, size_t>* m_BaseAddr;
+		size_t m_Capability;
+	private:
+		void Dilatation();
+	};
+}
 
-        size_t m_Capacity;
-    };
+// Definition
+namespace Firefly
+{
+	template<typename T>
+	inline T* PoolAllocatorHandle<T>::Get() const
+	{
+		return m_Allocator->GetRawPtr(m_Index);
+	}
+
+	template<typename T>
+	inline void PoolAllocatorHandle<T>::Release()
+	{
+		if (m_Index != 0 && m_Allocator != nullptr)
+		{
+			m_Allocator->Release(*this);
+		}
+		m_Index = 0;
+	}
+
+	template<typename T>
+	inline T& PoolAllocatorHandle<T>::operator*() const
+	{
+		return *Get();
+	}
+	
+	template<typename T>
+	inline T* PoolAllocatorHandle<T>::operator->() const
+	{
+		return Get();
+	}
+	
+	template<typename T>
+	inline bool PoolAllocatorHandle<T>::operator==(PoolAllocatorHandle const& other) const
+	{
+		return (m_Index == other.m_Index) && (&m_Allocator == &other.m_Allocator);
+	}
+	
+	template<typename T>
+	inline bool PoolAllocatorHandle<T>::operator!=(PoolAllocatorHandle const& other) const
+	{
+		return !(*this == other);
+	}
+	
+	template<typename T>
+	inline PoolAllocator<T>::PoolAllocator(size_t capability)
+		:m_BaseAddr(static_cast<unit_type*>(operator new[](sizeof(unit_type) * capability))), m_Capability(capability)
+	{
+		for (size_t i = 0; i < capability; ++i)
+		{
+			m_BaseAddr[i] = size_t(i + 1);
+		}
+	}
+	
+	template<typename T>
+	inline PoolAllocator<T>::~PoolAllocator()
+	{
+		for (size_t i = 0; i < m_Capability; ++i)
+		{
+			m_BaseAddr[i] = size_t(i + 1);
+		}
+		operator delete[](m_BaseAddr);
+	}
+	
+	template<typename T>
+	inline PoolAllocator<T>::PoolAllocator(PoolAllocator<T>&& other) noexcept
+		:m_BaseAddr(other.m_BaseAddr), m_Capability(other.m_Capability)
+	{
+		other.m_BaseAddr = nullptr;
+	}
+
+	template<typename T>
+	inline PoolAllocator<T>& PoolAllocator<T>::operator=(PoolAllocator<T>&& other) noexcept
+	{
+		if (this != &other)
+		{
+			delete[]m_BaseAddr;
+			m_BaseAddr = other.m_BaseAddr;
+			m_Capability = other.m_Capability;
+			other.m_BaseAddr = nullptr;
+		}
+		return *this;
+	}
+
+	template<typename T>
+	template<typename... Args>
+	inline PoolAllocator<T>::pointer_type PoolAllocator<T>::Allocate(Args&&... args)
+	{
+		if (std::get<size_t>(m_BaseAddr[0]) == m_Capability)
+		{
+			Dilatation();
+		}
+
+		size_t index = std::get<size_t>(m_BaseAddr[0]);
+		std::get<size_t>(m_BaseAddr[0]) = std::get<size_t>(m_BaseAddr[index]);
+		m_BaseAddr[index].emplace<T>(std::forward<Args>(args)...);
+
+		return pointer_type(index, this);
+	}
+	
+	template<typename T>
+	inline void PoolAllocator<T>::Release(pointer_type const& ptr) const
+	{
+		size_t index = ptr.GetIndex();
+		if (index < m_Capability && std::holds_alternative<T>(m_BaseAddr[index]))
+		{
+			size_t next = std::get<size_t>(m_BaseAddr[0]);
+			m_BaseAddr[index].emplace<size_t>(next);
+			std::get<size_t>(m_BaseAddr[0]) = index;
+		}
+	}
+	
+	template<typename T>
+	inline void PoolAllocator<T>::Dilatation()
+	{
+		//std::cout << "Delatation\n";
+		size_t newCapability = 2 * m_Capability;
+		unit_type* newMemBlock = static_cast<unit_type*>(operator new[](newCapability * sizeof(unit_type)));
+		memcpy(newMemBlock, m_BaseAddr, m_Capability * sizeof(unit_type));
+		for (size_t i = m_Capability; i < newCapability; ++i)
+		{
+			newMemBlock[i].emplace<size_t>(i + 1);
+		}
+		operator delete[](m_BaseAddr);
+		m_BaseAddr = newMemBlock;
+		m_Capability = newCapability;
+	}
+
+	template<typename T>
+	inline T* PoolAllocator<T>::GetRawPtr(size_t index) const
+	{
+		if (index < m_Capability)
+		{
+			return std::get_if<T>(m_BaseAddr + index);
+		}
+		return nullptr;
+	}
+}
+
+// Hash callable struct for PoolAllocatorHandle
+namespace std
+{
+	template<typename T>
+	struct hash<Firefly::PoolAllocatorHandle<T>>
+	{
+		size_t operator()(const Firefly::PoolAllocatorHandle<T>& obj) const
+		{
+			return std::hash<size_t>()(obj.GetIndex());
+		}
+	};
 }

@@ -64,6 +64,50 @@ Node* buildHuffmanTree(const std::unordered_map<char, int>& frequency)
     return minHeap.top();
 }
 
+#include <fstream>
+#include <string>
+
+#include <sstream>
+
+#include <sstream>
+
+void _WriteNode(std::ofstream& file, Node* node, int& nodeId) {
+    if (!node) return;
+
+    int currentId = nodeId++;
+    std::string label = node->ch == '\0' ? std::to_string(node->freq) : std::string(1, node->ch) + " (" + std::to_string(node->freq) + ")";
+    file << "    node" << currentId << " [label=\"" << label << "\"];\n";
+
+    if (node->left) {
+        file << "    node" << currentId << " -> node" << nodeId << " [label=\"0\"];\n";
+        _WriteNode(file, node->left, nodeId);
+    }
+
+    if (node->right) {
+        file << "    node" << currentId << " -> node" << nodeId << " [label=\"1\"];\n";
+        _WriteNode(file, node->right, nodeId);
+    }
+}
+
+void Display(Node* root, const std::string& filepath) {
+    std::ofstream file(filepath);
+    if (!file.is_open()) {
+        throw std::runtime_error("Unable to open file");
+    }
+
+    file << "digraph HuffmanTree {\n";
+    file << "    node [shape=circle];\n";
+
+    int nodeId = 0;
+    _WriteNode(file, root, nodeId);
+
+    file << "}\n";
+    file.close();
+}
+
+
+
+
 void buildCode(Node* node, std::unordered_map<char, std::string>& record, std::string code = "")
 {
     if (node == nullptr)
@@ -201,11 +245,11 @@ std::pair<Node*, std::unordered_map<char, std::string>> ReadTree(const std::stri
             // Read character encoding
             std::istringstream iss(line);
             char ch;
-            int code;
+            std::string code;
             ch = line[0];
             // Read character and its encoding (code)
             if (iss.ignore(3) && iss >> code) { // Ignore comma and read the code
-                encodingMap[ch] = std::to_string(code); // Add to encoding map
+                encodingMap[ch] = code; // Add to encoding map
             }
         }
         else {
@@ -486,6 +530,7 @@ void Terminate()
         delete pair.second;
     }
 }
+#if 0
 int main() {
     Status status = Status::AWaiting;
     while (status != Status::Quit)
@@ -558,6 +603,10 @@ int main() {
             if (tree != nullptr)
             {
                 PrintTree(tree);
+                std::cout << "输入欲保存.dot文件路径：";
+                std::string filepath;
+                std::cin >> filepath;
+                Display(tree, filepath);
             }
             status = Status::AWaiting;
             break;
@@ -570,6 +619,26 @@ int main() {
     }
     Terminate();
 }
+#endif
 
+class Base
+{
+public:
+    virtual void f() { std::cout << "Base!\n"; }
+private:
+    int a;
+};
+
+class Derived1 : public Base
+{
+public:
+    virtual void f() override { std::cout << "Derived1!\n"; }
+};
+
+class Derived2 : public Base
+{
+public:
+    virtual void f() override { std::cout << "Derived2!\n"; }
+};
 
 #endif
